@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframes — Yöresel Lezzet Rehberi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --ink: #1a1a2e;
+            --paper: #f5f0e8;
+            --accent: #c0392b;
+            --warm: #e67e22;
+            --muted: #8c8c8c;
+            --border: #d4c9b5;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            padding: 40px 20px
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 4px
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 48px
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 48px 0 20px
+        }
+
+        .wireframe {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: 4px 4px 0 var(--border)
+        }
+
+        .wf-header {
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 16px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .wf-header span {
+            font-size: 0.75rem;
+            opacity: .5;
+            font-weight: 400
+        }
+
+        .wf-body {
+            padding: 20px
+        }
+
+        .wf-nav {
+            background: #e8e0d0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px
+        }
+
+        .wf-nav-logo {
+            background: var(--accent);
+            width: 80px;
+            height: 20px;
+            border-radius: 3px
+        }
+
+        .wf-nav-links {
+            display: flex;
+            gap: 8px;
+            margin-left: auto
+        }
+
+        .wf-nav-link {
+            background: var(--border);
+            width: 60px;
+            height: 16px;
+            border-radius: 3px
+        }
+
+        .wf-nav-btn {
+            background: var(--accent);
+            width: 70px;
+            height: 24px;
+            border-radius: 3px;
+            opacity: .7
+        }
+
+        .wf-hero {
+            background: linear-gradient(135deg, #e8e0d0, #d4c9b5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center
+        }
+
+        .wf-hero-title {
+            background: var(--ink);
+            height: 20px;
+            width: 60%;
+            margin: 0 auto 10px;
+            border-radius: 3px
+        }
+
+        .wf-hero-sub {
+            background: var(--border);
+            height: 12px;
+            width: 40%;
+            margin: 0 auto 16px;
+            border-radius: 3px
+        }
+
+        .wf-map {
+            background: #d0e8d0;
+            border-radius: 8px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 16px;
+            overflow: hidden
+        }
+
+        .wf-map-label {
+            color: #5a8a5a;
+            font-size: 0.8rem;
+            font-weight: 500
+        }
+
+        .wf-map-regions {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .region-blob {
+            border-radius: 50%;
+            opacity: .4;
+            position: absolute
+        }
+
+        .r1 {
+            background: #c0392b;
+            width: 80px;
+            height: 50px;
+            top: 30%;
+            left: 20%
+        }
+
+        .r2 {
+            background: #e67e22;
+            width: 90px;
+            height: 60px;
+            top: 20%;
+            left: 40%
+        }
+
+        .r3 {
+            background: #27ae60;
+            width: 70px;
+            height: 45px;
+            top: 35%;
+            left: 60%
+        }
+
+        .r4 {
+            background: #2980b9;
+            width: 85px;
+            height: 55px;
+            top: 50%;
+            left: 30%
+        }
+
+        .r5 {
+            background: #8e44ad;
+            width: 75px;
+            height: 48px;
+            top: 45%;
+            left: 55%
+        }
+
+        .r6 {
+            background: #f39c12;
+            width: 65px;
+            height: 40px;
+            top: 60%;
+            left: 15%
+        }
+
+        .r7 {
+            background: #1abc9c;
+            width: 70px;
+            height: 45px;
+            top: 60%;
+            left: 70%
+        }
+
+        .wf-map-overlay {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, .8);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            color: #555
+        }
+
+        .wf-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 16px
+        }
+
+        .wf-grid-2 {
+            grid-template-columns: 1fr 1fr
+        }
+
+        .wf-grid-3 {
+            grid-template-columns: 1fr 1fr 1fr
+        }
+
+        .wf-card {
+            background: #f0ebe0;
+            border-radius: 6px;
+            padding: 12px
+        }
+
+        .wf-card-img {
+            background: #d4c9b5;
+            height: 80px;
+            border-radius: 4px;
+            margin-bottom: 8px
+        }
+
+        .wf-card-title {
+            background: var(--ink);
+            height: 12px;
+            width: 70%;
+            border-radius: 3px;
+            margin-bottom: 6px
+        }
+
+        .wf-card-sub {
+            background: var(--border);
+            height: 10px;
+            width: 50%;
+            border-radius: 3px;
+            margin-bottom: 6px
+        }
+
+        .wf-card-stars {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 6px
+        }
+
+        .wf-star {
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            border-radius: 2px
+        }
+
+        .wf-card-text {
+            background: #e0d9cc;
+            height: 8px;
+            border-radius: 3px;
+            margin-bottom: 4px
+        }
+
+        .wf-card-text.short {
+            width: 60%
+        }
+
+        .wf-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .wf-section-label {
+            background: var(--ink);
+            height: 14px;
+            width: 150px;
+            border-radius: 3px
+        }
+
+        .wf-section-link {
+            background: var(--accent);
+            height: 12px;
+            width: 60px;
+            border-radius: 3px;
+            opacity: .6
+        }
+
+        .wf-tooltip {
+            background: var(--ink);
+            color: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            top: 30%;
+            left: 35%;
+            width: 160px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .3)
+        }
+
+        .wf-tooltip-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff
+        }
+
+        .wf-tooltip-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px
+        }
+
+        .wf-tooltip-star {
+            width: 8px;
+            height: 8px;
+            background: #f39c12;
+            border-radius: 1px
+        }
+
+        .wf-tooltip-text {
+            font-size: 0.65rem;
+            color: #ccc
+        }
+
+        .wf-tooltip-arrow {
+            position: absolute;
+            bottom: -6px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--ink);
+            transform: rotate(45deg)
+        }
+
+        .wf-footer {
+            background: #e8e0d0;
+            border-radius: 6px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px
+        }
+
+        .wf-footer-col {}
+
+        .wf-footer-title {
+            background: var(--ink);
+            height: 12px;
+            width: 80px;
+            border-radius: 3px;
+            margin-bottom: 8px
+        }
+
+        .wf-footer-line {
+            background: var(--border);
+            height: 8px;
+            border-radius: 3px;
+            margin-bottom: 4px
+        }
+
+        .wf-footer-line.short {
+            width: 60%
+        }
+
+        .wf-form {
+            background: #f0ebe0;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 340px;
+            margin: 0 auto
+        }
+
+        .wf-input {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: 5px;
+            height: 38px;
+            margin-bottom: 10px;
+            width: 100%
+        }
+
+        .wf-btn {
+            background: var(--accent);
+            border-radius: 5px;
+            height: 40px;
+            width: 100%;
+            opacity: .8
+        }
+
+        .wf-divider {
+            border: none;
+            border-top: 1.5px dashed var(--border);
+            margin: 10px 0
+        }
+
+        .wf-label {
+            background: var(--border);
+            height: 10px;
+            width: 80px;
+            border-radius: 3px;
+            margin-bottom: 6px
+        }
+
+        .wf-admin-sidebar {
+            width: 180px;
+            background: #e8e0d0;
+            border-radius: 8px;
+            padding: 16px;
+            flex-shrink: 0
+        }
+
+        .wf-admin-menu-item {
+            background: var(--border);
+            height: 28px;
+            border-radius: 4px;
+            margin-bottom: 6px
+        }
+
+        .wf-admin-menu-item.active {
+            background: var(--accent);
+            opacity: .7
+        }
+
+        .wf-admin-content {
+            flex: 1;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px
+        }
+
+        .wf-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 6px;
+            align-items: center
+        }
+
+        .wf-table-head {
+            background: var(--ink);
+            height: 12px;
+            border-radius: 3px
+        }
+
+        .wf-table-cell {
+            background: #e0d9cc;
+            height: 28px;
+            border-radius: 3px
+        }
+
+        .wf-table-cell.action {
+            background: var(--accent);
+            opacity: .5
+        }
+
+        .wf-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px
+        }
+
+        .wf-leaflet {
+            background: #c8ddc8;
+            border-radius: 8px;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px
+        }
+
+        .wf-pin {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid #fff
+        }
+
+        .wf-pin-popup {
+            position: absolute;
+            background: #fff;
+            border-radius: 6px;
+            padding: 6px 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+            font-size: 0.65rem;
+            white-space: nowrap
+        }
+
+        .wf-review-item {
+            background: #f0ebe0;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px
+        }
+
+        .wf-review-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px
+        }
+
+        .wf-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--warm);
+            border-radius: 50%
+        }
+
+        .wf-review-name {
+            background: var(--ink);
+            height: 10px;
+            width: 80px;
+            border-radius: 3px
+        }
+
+        .wf-review-text {
+            background: var(--border);
+            height: 8px;
+            border-radius: 3px;
+            margin-bottom: 4px
+        }
+
+        .annotation {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-style: italic;
+            margin-top: 6px;
+            padding-left: 8px;
+            border-left: 2px solid var(--accent)
+        }
+
+        .page-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Wireframes</h1>
+    <p class="subtitle">Yöresel Lezzet Rehberi — Tüm Sayfa Taslakları</p>
+
+    <!-- HOME PAGE -->
+    <p class="section-title">1. Ana Sayfa (HomePage)</p>
+    <div class="wireframe">
+        <div class="wf-header">Ana Sayfa / HomePage <span>/ route: /</span></div>
+        <div class="wf-body">
+            <!-- Navbar -->
+            <div class="wf-nav">
+                <div class="wf-nav-logo"></div>
+                <div class="wf-nav-links">
+                    <div class="wf-nav-link"></div>
+                    <div class="wf-nav-link"></div>
+                    <div class="wf-nav-link"></div>
+                </div>
+                <div class="wf-nav-btn"></div>
+            </div>
+            <p class="annotation">↑ Navbar: Logo sol, linkler orta, Giriş Yap butonu sağ</p>
+
+            <!-- Hero -->
+            <div class="wf-hero">
+                <div class="wf-hero-title"></div>
+                <div class="wf-hero-sub"></div>
+            </div>
+            <p class="annotation">↑ Hero Banner: Başlık + kısa açıklama metni</p>
+
+            <!-- Türkiye Haritası -->
+            <div style="position:relative">
+                <div class="wf-map">
+                    <div class="wf-map-regions">
+                        <div class="region-blob r1"></div>
+                        <div class="region-blob r2"></div>
+                        <div class="region-blob r3"></div>
+                        <div class="region-blob r4"></div>
+                        <div class="region-blob r5"></div>
+                        <div class="region-blob r6"></div>
+                        <div class="region-blob r7"></div>
+                    </div>
+                    <span class="wf-map-label">🗺️ TÜRKİYE HARİTASI (react-simple-maps)<br>7 Renkli Bölge — Hover'da
+                        bölge adı — Tıkla → RegionPage</span>
+                    <div class="wf-map-overlay">Bölge seçin</div>
+                    <!-- Tooltip -->
+                    <div class="wf-tooltip">
+                        <div class="wf-tooltip-title">Karadeniz Bölgesi</div>
+                        <div class="wf-tooltip-row">
+                            <div class="wf-tooltip-star"></div>
+                            <div class="wf-tooltip-star"></div>
+                            <div class="wf-tooltip-star"></div>
+                            <div class="wf-tooltip-star"></div>
+                            <div class="wf-tooltip-star"></div>
+                        </div>
+                        <div class="wf-tooltip-text">18 Şehir · 124 Restoran</div>
+                        <div class="wf-tooltip-text" style="margin-top:4px">Kuymak, Hamsi, Laz Böreği</div>
+                        <div class="wf-tooltip-arrow"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="annotation">↑ Türkiye Haritası: SVG tabanlı, 7 bölge farklı renk, hover tooltip, tıklayınca
+                RegionPage</p>
+
+            <!-- En Sevilen Lezzetler -->
+            <div class="wf-section-header" style="margin-top:20px">
+                <div class="wf-section-label"></div>
+                <div class="wf-section-link"></div>
+            </div>
+            <p class="annotation">↑ Bölüm başlığı: "En Sevilen Lezzetler" + "Tümünü Gör" linki</p>
+            <div class="wf-grid wf-grid-3">
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                    <div class="wf-card-stars">
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                    </div>
+                </div>
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                    <div class="wf-card-stars">
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                    </div>
+                </div>
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                    <div class="wf-card-stars">
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="annotation">↑ Yemek kartları: Fotoğraf + isim + şehir + yıldız puanı</p>
+
+            <!-- En Yüksek Puanlı Restoranlar -->
+            <div class="wf-section-header" style="margin-top:20px">
+                <div class="wf-section-label"></div>
+                <div class="wf-section-link"></div>
+            </div>
+            <div class="wf-grid wf-grid-2">
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="annotation">↑ Restoran listesi: Küçük fotoğraf + isim + konum + puan + yorum sayısı</p>
+
+            <!-- Son Yorumlar -->
+            <div class="wf-section-header" style="margin-top:20px">
+                <div class="wf-section-label"></div>
+            </div>
+            <div class="wf-grid wf-grid-3">
+                <div class="wf-review-item">
+                    <div class="wf-review-header">
+                        <div class="wf-avatar"></div>
+                        <div>
+                            <div class="wf-review-name"></div>
+                        </div>
+                    </div>
+                    <div class="wf-review-text"></div>
+                    <div class="wf-review-text short"></div>
+                </div>
+                <div class="wf-review-item">
+                    <div class="wf-review-header">
+                        <div class="wf-avatar"></div>
+                        <div>
+                            <div class="wf-review-name"></div>
+                        </div>
+                    </div>
+                    <div class="wf-review-text"></div>
+                    <div class="wf-review-text short"></div>
+                </div>
+                <div class="wf-review-item">
+                    <div class="wf-review-header">
+                        <div class="wf-avatar"></div>
+                        <div>
+                            <div class="wf-review-name"></div>
+                        </div>
+                    </div>
+                    <div class="wf-review-text"></div>
+                    <div class="wf-review-text short"></div>
+                </div>
+            </div>
+            <p class="annotation">↑ Kullanıcı yorumları önizleme: Avatar + isim + yorum metni</p>
+
+            <!-- Footer -->
+            <div class="wf-footer" style="margin-top:20px">
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                    <div class="wf-footer-line short"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line short"></div>
+                    <div class="wf-footer-line"></div>
+                    <div class="wf-footer-line short"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                    <div class="wf-footer-line short"></div>
+                </div>
+            </div>
+            <p class="annotation">↑ Footer: 3 kolonlu, linkler + sosyal medya + telif hakkı</p>
+        </div>
+    </div>
+
+    <!-- REGION PAGE -->
+    <p class="section-title">2. Bölge Sayfası (RegionPage)</p>
+    <div class="wireframe">
+        <div class="wf-header">Bölge Sayfası / RegionPage <span>/ route: /bolge/:regionId</span></div>
+        <div class="wf-body">
+            <div class="wf-nav">
+                <div class="wf-nav-logo"></div>
+                <div class="wf-nav-links">
+                    <div class="wf-nav-link"></div>
+                    <div class="wf-nav-link"></div>
+                </div>
+                <div class="wf-nav-btn"></div>
+            </div>
+            <div
+                style="background:#d0e8d0;border-radius:8px;padding:16px;margin-bottom:12px;display:flex;gap:16px;align-items:center">
+                <div style="flex:1">
+                    <div style="background:#2d6a2d;height:18px;width:140px;border-radius:3px;margin-bottom:8px"></div>
+                    <div style="background:#5a8a5a;height:10px;width:200px;border-radius:3px"></div>
+                </div>
+                <div
+                    style="background:#5a8a5a;width:80px;height:80px;border-radius:50%;opacity:.5;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#fff">
+                    ZOOM</div>
+            </div>
+            <p class="annotation">↑ Bölge header: Bölge adı + açıklama + zoom edilmiş harita önizleme</p>
+
+            <div class="wf-map" style="height:220px;margin-bottom:12px">
+                <div class="wf-map-regions">
+                    <div class="region-blob r3" style="opacity:.8;width:120px;height:80px;top:30%;left:35%"></div>
+                    <div style="position:absolute;top:35%;left:25%;display:flex;flex-wrap:wrap;gap:6px">
+                        <div
+                            style="background:rgba(0,0,0,.5);color:#fff;font-size:0.6rem;padding:3px 6px;border-radius:3px">
+                            Trabzon</div>
+                        <div
+                            style="background:rgba(0,0,0,.5);color:#fff;font-size:0.6rem;padding:3px 6px;border-radius:3px">
+                            Rize</div>
+                        <div
+                            style="background:rgba(0,0,0,.5);color:#fff;font-size:0.6rem;padding:3px 6px;border-radius:3px">
+                            Samsun</div>
+                        <div
+                            style="background:rgba(0,0,0,.5);color:#fff;font-size:0.6rem;padding:3px 6px;border-radius:3px">
+                            Ordu</div>
+                    </div>
+                </div>
+                <span class="wf-map-label" style="position:absolute;bottom:8px;left:8px;font-size:0.7rem">Şehirlere
+                    tıkla → CityPage</span>
+            </div>
+            <p class="annotation">↑ Zoom edilmiş bölge haritası: Şehir noktalı, hover'da yemek tooltip'i, tıkla →
+                CityPage</p>
+
+            <div class="wf-section-header">
+                <div class="wf-section-label"></div>
+            </div>
+            <div class="wf-grid wf-grid-3">
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                </div>
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                </div>
+                <div class="wf-card">
+                    <div class="wf-card-img"></div>
+                    <div class="wf-card-title"></div>
+                    <div class="wf-card-sub"></div>
+                </div>
+            </div>
+            <p class="annotation">↑ Bölgenin popüler yemekleri listesi</p>
+            <div class="wf-footer" style="margin-top:20px">
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CITY PAGE -->
+    <p class="section-title">3. Şehir Sayfası (CityPage)</p>
+    <div class="wireframe">
+        <div class="wf-header">Şehir Sayfası / CityPage <span>/ route: /sehir/:cityId</span></div>
+        <div class="wf-body">
+            <div class="wf-nav">
+                <div class="wf-nav-logo"></div>
+                <div class="wf-nav-links">
+                    <div class="wf-nav-link"></div>
+                </div>
+                <div class="wf-nav-btn"></div>
+            </div>
+            <div style="background:#f0ebe0;border-radius:8px;padding:12px;margin-bottom:12px">
+                <div style="background:var(--ink);height:16px;width:120px;border-radius:3px;margin-bottom:6px"></div>
+                <div style="background:var(--border);height:10px;width:180px;border-radius:3px"></div>
+            </div>
+            <p class="annotation">↑ Şehir adı + bölge breadcrumb: Ana Sayfa > Karadeniz > Trabzon</p>
+
+            <div class="wf-leaflet">
+                <div class="wf-pin" style="top:40%;left:35%"></div>
+                <div class="wf-pin" style="top:55%;left:50%"></div>
+                <div class="wf-pin" style="top:30%;left:60%"></div>
+                <div class="wf-pin-popup" style="top:20%;left:38%">Lezzet Durağı ⭐4.8</div>
+                <span style="position:absolute;bottom:8px;left:8px;font-size:0.7rem;color:#3a6a3a">📍 Leaflet.js —
+                    Restoran konumları</span>
+            </div>
+            <p class="annotation">↑ Leaflet haritası: Pin'lere tıklayınca RestaurantPage'e git</p>
+
+            <div class="wf-section-header">
+                <div class="wf-section-label"></div>
+            </div>
+            <div class="wf-grid wf-grid-2">
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+                <div class="wf-card" style="display:flex;gap:10px">
+                    <div style="background:#d4c9b5;width:70px;height:70px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1">
+                        <div class="wf-card-title"></div>
+                        <div class="wf-card-sub"></div>
+                        <div class="wf-card-stars">
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                            <div class="wf-star"></div>
+                        </div>
+                        <div class="wf-card-text short"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="annotation">↑ Restoranlar listesi: Puana göre sıralı, tıkla → RestaurantPage</p>
+            <div class="wf-footer" style="margin-top:20px">
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESTAURANT PAGE -->
+    <p class="section-title">4. Restoran Sayfası (RestaurantPage)</p>
+    <div class="wireframe">
+        <div class="wf-header">Restoran Sayfası / RestaurantPage <span>/ route: /restoran/:restaurantId</span></div>
+        <div class="wf-body">
+            <div class="wf-nav">
+                <div class="wf-nav-logo"></div>
+                <div class="wf-nav-links">
+                    <div class="wf-nav-link"></div>
+                </div>
+                <div class="wf-nav-btn"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                <div>
+                    <div style="background:#d4c9b5;height:180px;border-radius:8px;margin-bottom:10px"></div>
+                    <div style="background:var(--ink);height:16px;width:80%;border-radius:3px;margin-bottom:6px"></div>
+                    <div style="background:var(--border);height:10px;width:60%;border-radius:3px;margin-bottom:8px">
+                    </div>
+                    <div style="display:flex;gap:6px;margin-bottom:8px">
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div class="wf-star"></div>
+                        <div style="background:var(--border);height:12px;width:60px;border-radius:3px;margin-left:4px">
+                        </div>
+                    </div>
+                    <div style="background:#f0ebe0;border-radius:6px;padding:10px">
+                        <div style="background:var(--border);height:10px;width:90%;border-radius:3px;margin-bottom:4px">
+                        </div>
+                        <div style="background:var(--border);height:10px;width:70%;border-radius:3px"></div>
+                    </div>
+                </div>
+                <div class="wf-leaflet" style="height:100%">
+                    <div class="wf-pin" style="top:50%;left:50%"></div>
+                    <div class="wf-pin-popup" style="top:30%;left:30%">Restoran Konumu</div>
+                </div>
+            </div>
+            <p class="annotation">↑ Sol: Fotoğraf + isim + adres + puan. Sağ: Tek pin Leaflet haritası</p>
+
+            <div class="wf-section-header">
+                <div class="wf-section-label"></div>
+            </div>
+            <div class="wf-review-item">
+                <div class="wf-review-header">
+                    <div class="wf-avatar"></div>
+                    <div>
+                        <div class="wf-review-name"></div>
+                    </div>
+                </div>
+                <div class="wf-card-stars" style="margin-bottom:6px">
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                </div>
+                <div class="wf-review-text"></div>
+                <div class="wf-review-text"></div>
+                <div class="wf-review-text short"></div>
+            </div>
+            <div class="wf-review-item">
+                <div class="wf-review-header">
+                    <div class="wf-avatar"></div>
+                    <div>
+                        <div class="wf-review-name"></div>
+                    </div>
+                </div>
+                <div class="wf-card-stars" style="margin-bottom:6px">
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                    <div class="wf-star"></div>
+                </div>
+                <div class="wf-review-text"></div>
+                <div class="wf-review-text short"></div>
+            </div>
+            <p class="annotation">↑ Kullanıcı yorumları: Avatar + isim + yıldız + yorum metni</p>
+
+            <div style="background:#f0ebe0;border-radius:8px;padding:16px;margin-top:12px">
+                <div style="background:var(--ink);height:14px;width:120px;border-radius:3px;margin-bottom:10px"></div>
+                <div class="wf-card-stars" style="margin-bottom:10px">
+                    <div class="wf-star" style="width:24px;height:24px"></div>
+                    <div class="wf-star" style="width:24px;height:24px"></div>
+                    <div class="wf-star" style="width:24px;height:24px"></div>
+                    <div class="wf-star" style="width:24px;height:24px;background:#ddd"></div>
+                    <div class="wf-star" style="width:24px;height:24px;background:#ddd"></div>
+                </div>
+                <div
+                    style="background:#fff;border:1.5px solid var(--border);border-radius:6px;height:70px;margin-bottom:10px">
+                </div>
+                <div class="wf-btn"></div>
+            </div>
+            <p class="annotation">↑ Yorum formu: Giriş yapmamış → "Yorum için giriş yap" mesajı. Giriş yapmış → Form
+                göster</p>
+            <div class="wf-footer" style="margin-top:20px">
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+                <div class="wf-footer-col">
+                    <div class="wf-footer-title"></div>
+                    <div class="wf-footer-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN & REGISTER -->
+    <p class="section-title">5. Giriş & Kayıt Sayfaları</p>
+    <div class="wireframe">
+        <div class="wf-header">Giriş / Kayıt Sayfaları <span>/ route: /giris · /kayit</span></div>
+        <div class="wf-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                <div>
+                    <p class="page-label" style="margin-bottom:12px">Giriş Yap (LoginPage)</p>
+                    <div class="wf-form">
+                        <div style="background:var(--ink);height:20px;width:100px;border-radius:3px;margin:0 auto 16px">
+                        </div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div
+                            style="background:var(--border);height:10px;width:120px;border-radius:3px;margin-bottom:12px">
+                        </div>
+                        <div class="wf-btn"></div>
+                        <div class="wf-divider"></div>
+                        <div style="background:var(--border);height:10px;width:140px;border-radius:3px;margin:0 auto">
+                        </div>
+                    </div>
+                    <p class="annotation">↑ Email + Şifre + "Şifremi Unuttum" + Kayıt Ol linki</p>
+                </div>
+                <div>
+                    <p class="page-label" style="margin-bottom:12px">Kayıt Ol (RegisterPage)</p>
+                    <div class="wf-form">
+                        <div style="background:var(--ink);height:20px;width:100px;border-radius:3px;margin:0 auto 16px">
+                        </div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div class="wf-label"></div>
+                        <div class="wf-input"></div>
+                        <div class="wf-btn"></div>
+                        <div class="wf-divider"></div>
+                        <div style="background:var(--border);height:10px;width:140px;border-radius:3px;margin:0 auto">
+                        </div>
+                    </div>
+                    <p class="annotation">↑ Ad + Soyad + Email + Şifre + Kayıt butonu + Giriş Yap linki</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <p class="section-title">6. Admin Paneli</p>
+    <div class="wireframe">
+        <div class="wf-header">Admin Paneli / AdminPage <span>/ route: /admin (sadece admin rolü)</span></div>
+        <div class="wf-body">
+            <div style="display:flex;gap:16px">
+                <div class="wf-admin-sidebar">
+                    <div
+                        style="background:var(--accent);height:16px;width:80%;border-radius:3px;margin-bottom:16px;opacity:.7">
+                    </div>
+                    <div class="wf-admin-menu-item active"></div>
+                    <div class="wf-admin-menu-item"></div>
+                    <div class="wf-admin-menu-item"></div>
+                    <div class="wf-admin-menu-item"></div>
+                    <div class="wf-admin-menu-item"></div>
+                </div>
+                <div class="wf-admin-content">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+                        <div style="background:#e8e0d0;border-radius:6px;padding:10px;text-align:center">
+                            <div
+                                style="background:var(--accent);height:20px;width:40px;border-radius:3px;margin:0 auto 4px;opacity:.7">
+                            </div>
+                            <div style="background:var(--border);height:10px;border-radius:3px"></div>
+                        </div>
+                        <div style="background:#e8e0d0;border-radius:6px;padding:10px;text-align:center">
+                            <div
+                                style="background:#27ae60;height:20px;width:40px;border-radius:3px;margin:0 auto 4px;opacity:.7">
+                            </div>
+                            <div style="background:var(--border);height:10px;border-radius:3px"></div>
+                        </div>
+                        <div style="background:#e8e0d0;border-radius:6px;padding:10px;text-align:center">
+                            <div
+                                style="background:#2980b9;height:20px;width:40px;border-radius:3px;margin:0 auto 4px;opacity:.7">
+                            </div>
+                            <div style="background:var(--border);height:10px;border-radius:3px"></div>
+                        </div>
+                        <div style="background:#e8e0d0;border-radius:6px;padding:10px;text-align:center">
+                            <div
+                                style="background:#f39c12;height:20px;width:40px;border-radius:3px;margin:0 auto 4px;opacity:.7">
+                            </div>
+                            <div style="background:var(--border);height:10px;border-radius:3px"></div>
+                        </div>
+                    </div>
+                    <p class="annotation">↑ Özet kartlar: Toplam Kullanıcı, Restoran, Yemek, Yorum sayıları</p>
+                    <div style="background:#fff;border-radius:6px;padding:12px">
+                        <div class="wf-table-row" style="margin-bottom:10px">
+                            <div class="wf-table-head"></div>
+                            <div class="wf-table-head"></div>
+                            <div class="wf-table-head"></div>
+                            <div class="wf-table-head"></div>
+                        </div>
+                        <div class="wf-table-row">
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell action"></div>
+                        </div>
+                        <div class="wf-table-row">
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell action"></div>
+                        </div>
+                        <div class="wf-table-row">
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell"></div>
+                            <div class="wf-table-cell action"></div>
+                        </div>
+                    </div>
+                    <p class="annotation">↑ Veri tablosu: Kullanıcı/Restoran/Yemek/Yorum listesi — Düzenle / Sil
+                        aksiyonları</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
