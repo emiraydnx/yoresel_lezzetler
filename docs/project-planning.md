@@ -154,7 +154,6 @@ yoresel_lezzetler/
     project-planning.md
 ```
 
-Not: Mevcut bazı dosya adlarında `Resturant` yazımı var. Geliştirme başlamadan önce hepsini `Restaurant` olarak düzeltmek daha temiz olur.
 
 ## 1. User Flows
 
