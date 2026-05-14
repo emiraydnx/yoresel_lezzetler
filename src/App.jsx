@@ -1,13 +1,23 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import CityPage from './pages/CityPage';
+import FoodDetailPage from './pages/FoodDetailPage';
 import GourmetReviewPage from './pages/GourmetReviewPage';
 import HomePage from './pages/HomePage';
+import RestaurantPage from './pages/RestaurantPage';
+import ReviewsPage from './pages/ReviewsPage';
+import TopFoodsPage from './pages/TopFoodsPage';
+import TopRestaurantsPage from './pages/TopRestaurantsPage';
 import LoginPage from './pages/LoginPage';
 import PublicUserProfilePage from './pages/PublicUserProfilePage';
 import RegionPage from './pages/RegionPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminFoods from './pages/admin/AdminFoods';
 import AdminPage from './pages/admin/AdminPage';
+import AdminRestaurants from './pages/admin/AdminRestaurants';
+import AdminReviews from './pages/admin/AdminReviews';
+import AdminUsers from './pages/admin/AdminUsers';
 import ProfilePage from './pages/userProfilePage';
 
 const AppShell = () => {
@@ -60,6 +70,12 @@ const AppShell = () => {
         <main className="mx-auto max-w-6xl px-4 py-8">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/cities/:citySlug" element={<CityPage />} />
+            <Route path="/foods/:foodSlug" element={<FoodDetailPage />} />
+            <Route path="/restaurants/:restaurantSlug" element={<RestaurantPage />} />
+            <Route path="/top-foods" element={<TopFoodsPage />} />
+            <Route path="/top-restaurants" element={<TopRestaurantsPage />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/regions/:regionSlug" element={<RegionPage />} />
             <Route path="/reviews/:reviewId" element={<GourmetReviewPage />} />
             <Route path="/users/:userId" element={<PublicUserProfilePage />} />
@@ -73,6 +89,38 @@ const AppShell = () => {
               element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/foods"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminFoods />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/restaurants"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminRestaurants />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/reviews"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminReviews />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminUsers />
                 </ProtectedRoute>
               }
             />

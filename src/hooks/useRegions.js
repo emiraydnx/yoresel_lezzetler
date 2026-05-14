@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { firestoreQuery, getCollection } from '../firebase/firestore';
+import { firestoreQuery, getCollection, getDocument } from '../firebase/firestore';
 
 const toNumber = (value) => Number(value || 0);
 
@@ -54,6 +54,57 @@ export const useRegions = () => {
   }, []);
 
   return { regions, loading, error };
+};
+
+export const useRegionDetail = (regionSlug) => {
+  const [region, setRegion] = useState(null);
+  const [loading, setLoading] = useState(Boolean(regionSlug));
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!regionSlug) {
+      setRegion(null);
+      setLoading(false);
+      setError(null);
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    const loadRegion = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const documentMatch = await getDocument('Regions', regionSlug);
+        const slugMatch = documentMatch ? [] : await getCollection('Regions', [
+          firestoreQuery.where('slug', '==', regionSlug),
+          firestoreQuery.limit(1),
+        ]);
+
+
+        if (isMounted) {
+          setRegion(documentMatch || slugMatch[0] || null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRegion();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [regionSlug]);
+
+  return { region, loading, error };
 };
 
 export const useTopRegions = (resultLimit = 3) => {

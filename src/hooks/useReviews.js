@@ -4,6 +4,7 @@ import {
   firestoreQuery,
   getCollection,
   getDocument,
+  updateDocument,
 } from '../firebase/firestore';
 
 const toMillis = (value) => {
@@ -54,6 +55,126 @@ export const createReview = ({ userId, targetType, targetId, rating, comment }) 
     comment,
     status: 'pending',
   });
+
+export const recalculateTargetRating = async (targetType, targetId) => {
+  if (!targetType || !targetId) {
+    return null;
+  }
+
+  const collectionName = targetType === 'food' ? 'foods' : targetType === 'restaurant' ? 'restaurants' : '';
+
+  if (!collectionName) {
+    return null;
+  }
+
+  const approvedReviews = await getReviewsByTarget(targetType, targetId);
+  const reviewCount = approvedReviews.length;
+  const averageRating = reviewCount
+    ? approvedReviews.reduce((total, review) => total + Number(review.rating || 0), 0) / reviewCount
+    : 0;
+
+  await updateDocument(collectionName, targetId, {
+    averageRating: Number(averageRating.toFixed(2)),
+    reviewCount,
+  });
+
+  return {
+    averageRating,
+    reviewCount,
+  };
+};
+
+export const useReviewsByTarget = (targetType, targetId, refreshKey = 0) => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(Boolean(targetType && targetId));
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!targetType || !targetId) {
+      setReviews([]);
+      setLoading(false);
+      setError(null);
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    const loadReviews = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const reviewDocs = await getReviewsByTarget(targetType, targetId);
+        const enrichedReviews = await Promise.all(reviewDocs.map(enrichReviewWithUser));
+
+        if (isMounted) {
+          setReviews(enrichedReviews);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadReviews();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [targetType, targetId, refreshKey]);
+
+  return { reviews, loading, error };
+};
+
+export const useRecentReviews = (resultLimit = 30) => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadReviews = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const reviewDocs = await getCollection('reviews', [
+          firestoreQuery.orderBy('createdAt', 'desc'),
+          firestoreQuery.limit(resultLimit),
+        ]);
+        const approvedReviews = reviewDocs
+          .filter((review) => !review.status || review.status === 'approved')
+          .sort((first, second) => toMillis(second.createdAt) - toMillis(first.createdAt));
+        const enrichedReviews = await Promise.all(approvedReviews.map(enrichReviewWithUser));
+
+        if (isMounted) {
+          setReviews(enrichedReviews);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadReviews();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [resultLimit]);
+
+  return { reviews, loading, error };
+};
 
 export const useFeaturedGourmetReviews = (resultLimit = 3) => {
   const [reviews, setReviews] = useState([]);

@@ -426,6 +426,9 @@ const TurkeyMap = () => {
               <p className="text-xs font-semibold uppercase text-red-700">Şehir rehberi</p>
               <h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedProvince}</h2>
               <p className="mt-1 text-sm text-slate-500">{selectedRegion?.name}</p>
+              <Link className="mt-3 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/cities/${selectedCityId}`}>
+                Şehir sayfasına git
+              </Link>
             </div>
             <button
               aria-label="Şehir menüsünü kapat"
