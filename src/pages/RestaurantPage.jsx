@@ -4,7 +4,7 @@ import ReviewForm from '../components/UI/ReviewForm';
 import StartRating from '../components/UI/StartRating';
 import { useAuth } from '../context/AuthContext';
 import { useCityDetail } from '../hooks/useCities';
-import { useFoodsByCity } from '../hooks/useFoods';
+import { useFoodsByRestaurant } from '../hooks/useFoods';
 import { createReview, useReviewsByTarget } from '../hooks/useReviews';
 import { useRestaurantDetail } from '../hooks/useRestaurants';
 
@@ -35,7 +35,11 @@ const RestaurantPage = () => {
     const { currentUser, userProfile } = useAuth();
     const { restaurant, loading, error } = useRestaurantDetail(restaurantSlug);
     const { city } = useCityDetail(restaurant?.cityId);
-    const { foods } = useFoodsByCity(restaurant?.cityId, 6);
+    const {
+        foods,
+        loading: foodsLoading,
+        error: foodsError,
+    } = useFoodsByRestaurant(restaurant?.id);
     const [refreshKey, setRefreshKey] = useState(0);
     const [submitError, setSubmitError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
@@ -137,8 +141,14 @@ const RestaurantPage = () => {
                 </div>
 
                 <div className="rounded border bg-white p-5">
-                    <h2 className="font-semibold text-slate-950">Sehirde One Cikan Lezzetler</h2>
-                    {!foods.length && <p className="mt-3 text-sm text-slate-500">Bu sehir icin lezzet kaydi bekleniyor.</p>}
+                    <h2 className="font-semibold text-slate-950">Bu Restoranin Sundugu Lezzetler</h2>
+                    {foodsLoading && <p className="mt-3 text-sm text-slate-500">Lezzetler yukleniyor...</p>}
+                    {foodsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
+                    {!foodsLoading && !foods.length && (
+                        <p className="mt-3 text-sm text-slate-500">
+                            Bu restoran icin restaurantFoods iliskisi bekleniyor.
+                        </p>
+                    )}
                     <div className="mt-3 space-y-3">
                         {foods.map((food) => (
                             <Link className="block rounded border p-3 text-sm hover:border-slate-400" key={food.id} to={`/foods/${food.slug || food.id}`}>

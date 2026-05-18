@@ -46,8 +46,9 @@ export const getReviewsByTarget = (targetType, targetId) =>
       .sort((first, second) => toMillis(second.createdAt) - toMillis(first.createdAt))
   );
 
-export const createReview = ({ userId, targetType, targetId, rating, comment }) =>
+export const createReview = ({ userId, targetType, targetId, rating, comment, ...metadata }) =>
   createDocument('reviews', {
+    ...metadata,
     userId,
     targetType,
     targetId,

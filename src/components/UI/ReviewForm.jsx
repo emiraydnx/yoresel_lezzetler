@@ -2,11 +2,25 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import StartRating from './StartRating';
 
+const getSubmitErrorMessage = (error) => {
+    if (error?.code === 'permission-denied') {
+        return 'Yorum gonderilemedi. E-posta dogruladiysan cikis yapip tekrar giris yap veya sayfayi yenile.';
+    }
+
+    return error?.message || 'Yorum gonderilemedi.';
+};
+
 const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
-    const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [submitState, setSubmitState] = useState({ status: 'idle', message: '' });
+    const isSubmitting = disabled || submitState.status === 'loading';
+
+    const resetMessage = () => {
+        if (submitState.status !== 'loading') {
+            setSubmitState({ status: 'idle', message: '' });
+        }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -16,21 +30,32 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
         }
 
         if (!comment.trim()) {
-            setError('Yorum metni zorunlu.');
-            setSuccessMessage('');
+            setSubmitState({ status: 'error', message: 'Yorum metni zorunlu.' });
             return;
         }
 
         try {
-            setError('');
-            setSuccessMessage('');
+            setSubmitState({ status: 'loading', message: 'Yorum gonderiliyor...' });
+
+            if (currentUser.emailVerified === false) {
+                await currentUser.reload?.();
+
+                if (currentUser.emailVerified === false) {
+                    setSubmitState({
+                        status: 'error',
+                        message: 'Yorum gonderebilmek icin once e-posta adresini dogrulaman gerekiyor.',
+                    });
+                    return;
+                }
+            }
+
+            await currentUser.getIdToken?.(true);
             await onSubmit({ rating, comment: comment.trim() });
             setComment('');
             setRating(5);
-            setSuccessMessage('Yorumun gonderildi. Admin onayindan sonra yayinda gorunecek.');
+            setSubmitState({ status: 'success', message: 'Yorumun gonderildi. Admin onayindan sonra yayinda gorunecek.' });
         } catch (err) {
-            setError(err.message || 'Yorum gonderilemedi.');
-            setSuccessMessage('');
+            setSubmitState({ status: 'error', message: getSubmitErrorMessage(err) });
         }
     };
 
@@ -57,9 +82,12 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
                     Puan
                     <StartRating
                         className="mt-1"
-                        disabled={disabled}
+                        disabled={isSubmitting}
                         interactive
-                        onChange={setRating}
+                        onChange={(nextRating) => {
+                            setRating(nextRating);
+                            resetMessage();
+                        }}
                         rating={rating}
                         showReviewCount={false}
                     />
@@ -68,15 +96,28 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
 
             <textarea
                 className="mt-4 min-h-28 w-full rounded border px-3 py-2 text-sm"
-                disabled={disabled}
-                onChange={(event) => setComment(event.target.value)}
+                disabled={isSubmitting}
+                onChange={(event) => {
+                    setComment(event.target.value);
+                    resetMessage();
+                }}
                 placeholder="Deneyimini kisaca yaz..."
                 value={comment}
             />
-            {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
-            {successMessage && <p className="mt-2 rounded border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{successMessage}</p>}
-            <button className="mt-3 rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={disabled} type="submit">
-                {disabled ? 'Gonderiliyor...' : 'Yorumu Gonder'}
+            {submitState.message && (
+                <p
+                    aria-live="polite"
+                    className={
+                        submitState.status === 'success'
+                            ? 'mt-2 rounded border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700'
+                            : 'mt-2 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700'
+                    }
+                >
+                    {submitState.message}
+                </p>
+            )}
+            <button className="mt-3 rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={isSubmitting} type="submit">
+                {isSubmitting ? 'Gonderiliyor...' : 'Yorumu Gonder'}
             </button>
         </form>
     );

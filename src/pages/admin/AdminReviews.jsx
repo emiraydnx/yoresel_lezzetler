@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminCollection } from '../../hooks/useAdminCollection';
-import { recalculateTargetRating } from '../../hooks/useReviews';
 
 const emptyForm = {
     cityName: '',
@@ -19,42 +18,80 @@ const emptyForm = {
     userName: '',
 };
 
-const normalizeReview = (form) => ({
-    ...form,
-    isFeatured: Boolean(form.isFeatured),
-    rating: Number(form.rating || 0),
-});
+const normalizeReview = (form, selectedTarget) => {
+    const targetName = selectedTarget?.name || '';
+
+    return {
+        ...form,
+        cityId: selectedTarget?.cityId || form.cityId || '',
+        cityName: form.cityName || '',
+        foodId: form.targetType === 'food' ? form.targetId : '',
+        foodName: form.targetType === 'food' ? targetName : '',
+        isFeatured: Boolean(form.isFeatured),
+        rating: Number(form.rating || 0),
+        restaurantId: form.targetType === 'restaurant' ? form.targetId : '',
+        restaurantName: form.targetType === 'restaurant' ? targetName : '',
+    };
+};
 
 const AdminReviews = () => {
     const { createItem, deleteItem, error, items: reviews, loading, submitting, updateItem } = useAdminCollection('reviews', 'status');
+    const { items: foods, loading: foodsLoading } = useAdminCollection('foods');
+    const { items: restaurants, loading: restaurantsLoading } = useAdminCollection('restaurants');
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
     const [statusMessage, setStatusMessage] = useState('');
+
+    const targetOptions = useMemo(
+        () => (form.targetType === 'food' ? foods : restaurants),
+        [foods, form.targetType, restaurants]
+    );
+    const selectedTarget = targetOptions.find((item) => item.id === form.targetId);
+    const targetLoading = form.targetType === 'food' ? foodsLoading : restaurantsLoading;
+    const hasLegacyTarget = form.targetId && !selectedTarget;
 
     const handleChange = (event) => {
         const { checked, name, type, value } = event.target;
         setForm((current) => ({
             ...current,
             [name]: type === 'checkbox' ? checked : value,
+            ...(name === 'targetType'
+                ? {
+                    foodId: '',
+                    foodName: '',
+                    restaurantId: '',
+                    restaurantName: '',
+                    targetId: '',
+                }
+                : {}),
+        }));
+    };
+
+    const handleTargetChange = (event) => {
+        const targetId = event.target.value;
+        const target = targetOptions.find((item) => item.id === targetId);
+
+        setForm((current) => ({
+            ...current,
+            cityName: current.cityName || target?.cityName || target?.cityId || '',
+            foodId: current.targetType === 'food' ? targetId : '',
+            foodName: current.targetType === 'food' ? target?.name || '' : '',
+            restaurantId: current.targetType === 'restaurant' ? targetId : '',
+            restaurantName: current.targetType === 'restaurant' ? target?.name || '' : '',
+            targetId,
         }));
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const payload = normalizeReview(form);
-        const currentReview = reviews.find((review) => review.id === editingId);
+        const payload = normalizeReview(form, selectedTarget);
 
         if (editingId) {
             await updateItem(editingId, payload);
-            await recalculateTargetRating(currentReview?.targetType, currentReview?.targetId);
-            await recalculateTargetRating(payload.targetType, payload.targetId);
-            setStatusMessage('Yorum guncellendi. Ilgili puan ve yorum sayisi yeniden hesaplandi.');
+            setStatusMessage('Yorum guncellendi. Cloud Functions deploy edildiyse ilgili puan ve yorum sayisi otomatik yenilenir.');
         } else {
             await createItem(payload);
-            if (payload.status === 'approved') {
-                await recalculateTargetRating(payload.targetType, payload.targetId);
-            }
-            setStatusMessage('Yorum eklendi.');
+            setStatusMessage('Yorum eklendi. Onayli kayitlar icin istatistikleri Cloud Functions gunceller.');
         }
 
         setForm(emptyForm);
@@ -83,18 +120,16 @@ const AdminReviews = () => {
     const handleDelete = async (review) => {
         if (window.confirm(`${review.userName || review.userId || review.id} yorumu silinsin mi?`)) {
             await deleteItem(review.id);
-            await recalculateTargetRating(review.targetType, review.targetId);
-            setStatusMessage('Yorum silindi. Ilgili puan ve yorum sayisi yeniden hesaplandi.');
+            setStatusMessage('Yorum silindi. Cloud Functions deploy edildiyse ilgili istatistikler otomatik yenilenir.');
         }
     };
 
     const handleQuickStatus = async (review, status) => {
         await updateItem(review.id, { status });
-        await recalculateTargetRating(review.targetType, review.targetId);
         setStatusMessage(
             status === 'approved'
-                ? 'Yorum onaylandi. Ortalama puan ve yorum sayisi guncellendi.'
-                : 'Yorum reddedildi. Ortalama puan ve yorum sayisi guncellendi.'
+                ? 'Yorum onaylandi. Ortalama puan ve yorum sayisini Cloud Functions gunceller.'
+                : 'Yorum reddedildi. Ortalama puan ve yorum sayisini Cloud Functions gunceller.'
         );
     };
 
@@ -129,23 +164,41 @@ const AdminReviews = () => {
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Target ID
-                    <input className="mt-1 w-full rounded border px-3 py-2" name="targetId" onChange={handleChange} required value={form.targetId} />
+                    <select
+                        className="mt-1 w-full rounded border px-3 py-2"
+                        disabled={targetLoading}
+                        name="targetId"
+                        onChange={handleTargetChange}
+                        required
+                        value={form.targetId}
+                    >
+                        <option value="">{targetLoading ? 'Hedefler yukleniyor...' : 'Dokuman ID sec'}</option>
+                        {hasLegacyTarget && <option value={form.targetId}>Mevcut hedef: {form.targetId}</option>}
+                        {targetOptions.map((target) => (
+                            <option key={target.id} value={target.id}>
+                                {target.name || target.slug || target.id} ({target.id})
+                            </option>
+                        ))}
+                    </select>
+                    <span className="mt-1 block text-xs text-slate-500">
+                        Production istatistikleri dokuman ID uzerinden Cloud Functions hesaplar.
+                    </span>
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Food ID
-                    <input className="mt-1 w-full rounded border px-3 py-2" name="foodId" onChange={handleChange} value={form.foodId} />
+                    <input className="mt-1 w-full rounded border bg-slate-50 px-3 py-2" name="foodId" readOnly value={form.foodId} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Food Name
-                    <input className="mt-1 w-full rounded border px-3 py-2" name="foodName" onChange={handleChange} value={form.foodName} />
+                    <input className="mt-1 w-full rounded border bg-slate-50 px-3 py-2" name="foodName" readOnly value={form.foodName} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Restaurant ID
-                    <input className="mt-1 w-full rounded border px-3 py-2" name="restaurantId" onChange={handleChange} value={form.restaurantId} />
+                    <input className="mt-1 w-full rounded border bg-slate-50 px-3 py-2" name="restaurantId" readOnly value={form.restaurantId} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Restaurant Name
-                    <input className="mt-1 w-full rounded border px-3 py-2" name="restaurantName" onChange={handleChange} value={form.restaurantName} />
+                    <input className="mt-1 w-full rounded border bg-slate-50 px-3 py-2" name="restaurantName" readOnly value={form.restaurantName} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
                     Sehir

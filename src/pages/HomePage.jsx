@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTopRegions } from '../hooks/useRegions';
 import { useTopFoods } from '../hooks/useFoods';
-import { useTopRestaurants } from '../hooks/useRestaurants';
+import { useTopRestaurants, useTopRestaurantsByRegion } from '../hooks/useRestaurants';
 import TurkeyMap from '../components/map/TurkeyMap';
 import GourmetReviewCard from '../components/home/GourmetReviewCard';
 import { regionColors } from '../data/turkeyRegionsGeo';
@@ -45,6 +45,11 @@ const HomePage = () => {
   const { foods, loading: foodsLoading, error: foodsError } = useTopFoods(8);
   const { restaurants, loading: restaurantsLoading, error: restaurantsError } = useTopRestaurants(4);
   const {
+    regions: topRestaurantRegions,
+    loading: topRestaurantRegionsLoading,
+    error: topRestaurantRegionsError,
+  } = useTopRestaurantsByRegion();
+  const {
     reviews: gourmetReviews,
     loading: gourmetReviewsLoading,
     error: gourmetReviewsError,
@@ -61,6 +66,51 @@ const HomePage = () => {
       </section>
 
       <TurkeyMap />
+
+      <section className="space-y-4">
+        <SectionHeader
+          description="Her cografi bolgede en yuksek skora sahip restoranlar. Skor puan ve yorum sayisina gore hesaplanir."
+          linkText="Tum Restoranlar"
+          linkTo="/top-restaurants"
+          title="7 Bolgeden En Iyi Restoranlar"
+        />
+        {topRestaurantRegionsLoading && <p className="text-sm text-slate-500">Bolge restoranlari yukleniyor...</p>}
+        {topRestaurantRegionsError && (
+          <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{topRestaurantRegionsError.message}</p>
+        )}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {topRestaurantRegions.map((region) => {
+            const restaurant = region.restaurant;
+            const restaurantPath = restaurant ? `/restaurants/${restaurant.slug || restaurant.id}` : '/top-restaurants';
+
+            return (
+              <Link
+                className="rounded border bg-white p-4 transition hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-sm"
+                key={region.id}
+                to={restaurantPath}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-slate-400">{region.name}</p>
+                    <h3 className="mt-1 font-semibold text-slate-950">
+                      {restaurant?.name || 'Restoran verisi bekleniyor'}
+                    </h3>
+                  </div>
+                  <span className="h-4 w-4 rounded-full" style={{ backgroundColor: regionColors[region.id] || '#94a3b8' }} />
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm text-slate-500">
+                  {restaurant?.address || 'Bu bolge icin restoran kaydi eklendiginde burada gosterilecek.'}
+                </p>
+                {restaurant && (
+                  <div className="mt-4">
+                    <RatingBadge rating={getRating(restaurant)} reviewCount={getReviewCount(restaurant)} />
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="space-y-4">
         <SectionHeader

@@ -145,6 +145,75 @@ export const useFoodsByRegion = (regionId, resultLimit = 12) => {
   return { foods, loading, error };
 };
 
+export const useFoodsByRestaurant = (restaurantId) => {
+  const [foods, setFoods] = useState([]);
+  const [loading, setLoading] = useState(Boolean(restaurantId));
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!restaurantId) {
+      setFoods([]);
+      setLoading(false);
+      setError(null);
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    const loadRestaurantFoods = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const relations = await getCollection('restaurantFoods', [
+          firestoreQuery.where('restaurantId', '==', restaurantId),
+        ]);
+
+        const foodDocuments = await Promise.all(
+          relations.map(async (relation) => {
+            const food = relation.foodId ? await getDocument('foods', relation.foodId) : null;
+
+            return food
+              ? { ...food, relationId: relation.id }
+              : {
+                id: relation.foodId || relation.id,
+                relationId: relation.id,
+                name: relation.foodName || 'Lezzet bilgisi bekleniyor',
+                averageRating: 0,
+                reviewCount: 0,
+              };
+          })
+        );
+
+        if (isMounted) {
+          setFoods(
+            foodDocuments.sort((first, second) => {
+              const ratingDifference = Number(second.averageRating || 0) - Number(first.averageRating || 0);
+              return ratingDifference || Number(second.reviewCount || 0) - Number(first.reviewCount || 0);
+            })
+          );
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRestaurantFoods();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [restaurantId]);
+
+  return { foods, loading, error };
+};
+
 export const useFoodDetail = (foodSlug) => {
   const [food, setFood] = useState(null);
   const [loading, setLoading] = useState(Boolean(foodSlug));

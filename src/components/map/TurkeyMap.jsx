@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { regionColors, regionStats, regions, provinceToRegion } from '../../data/turkeyRegionsGeo';
 import { useFoodsByCity } from '../../hooks/useFoods';
-import { useRestaurantsByCity } from '../../hooks/useRestaurants';
+import { useCityMapRestaurants } from '../../hooks/useRestaurants';
 import turkeyProvincesGeo from '../../data/turkey-provinces.json';
 
 const turkeyFeatures = Array.isArray(turkeyProvincesGeo.features) ? turkeyProvincesGeo.features : [];
@@ -88,7 +87,7 @@ const getFeatureCenter = (feature) => {
 const getRegionFeatures = (regionId) =>
   turkeyFeatures.filter((feature) => provinceToRegion[feature.properties.name] === regionId);
 
-const getZoomTransform = (regionId) => {
+const getRegionZoomTransform = (regionId) => {
   if (!regionId) {
     return { scale: 1, translateX: 0, translateY: 4 };
   }
@@ -114,8 +113,10 @@ const getZoomTransform = (regionId) => {
 
 const cityIdOverrides = {
   Afyon: 'afyonkarahisar',
-  'K. Maraş': 'kahramanmaras',
-  Maraş: 'kahramanmaras',
+  'K. MaraÅŸ': 'kahramanmaras',
+  'K. Maras': 'kahramanmaras',
+  MaraÅŸ: 'kahramanmaras',
+  Maras: 'kahramanmaras',
 };
 
 const toCityId = (provinceName = '') => {
@@ -125,12 +126,12 @@ const toCityId = (provinceName = '') => {
 
   return provinceName
     .toLocaleLowerCase('tr-TR')
-    .replace(/ç/g, 'c')
-    .replace(/ğ/g, 'g')
-    .replace(/ı/g, 'i')
-    .replace(/ö/g, 'o')
-    .replace(/ş/g, 's')
-    .replace(/ü/g, 'u')
+    .replace(/ç|Ã§/g, 'c')
+    .replace(/ğ|ÄŸ/g, 'g')
+    .replace(/ı|Ä±/g, 'i')
+    .replace(/ö|Ã¶/g, 'o')
+    .replace(/ş|ÅŸ/g, 's')
+    .replace(/ü|Ã¼/g, 'u')
     .replace(/\./g, '')
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9]/g, '');
@@ -138,23 +139,14 @@ const toCityId = (provinceName = '') => {
 
 const getRating = (item) => Number(item?.averageRating || 0);
 const getReviewCount = (item) => Number(item?.reviewCount || 0);
+const getRestaurantPath = (restaurant) => `/restaurants/${restaurant.slug || restaurant.id}`;
 
 const RatingLine = ({ item }) => (
   <p className="mt-1 text-xs text-slate-500">
-    <span className="font-semibold text-amber-700">★ {getRating(item) ? getRating(item).toFixed(1) : 'Yeni'}</span>
-    <span> · {getReviewCount(item)} yorum</span>
+    <span className="font-semibold text-amber-700">{getRating(item) ? `${getRating(item).toFixed(1)}/5` : 'Yeni'}</span>
+    <span> - {getReviewCount(item)} yorum</span>
   </p>
 );
-
-const placeholderFoods = (cityName) => [
-  { id: `${toCityId(cityName)}-lezzet-1`, name: `${cityName} yöresel lezzeti`, slug: '', averageRating: 0, reviewCount: 0 },
-  { id: `${toCityId(cityName)}-lezzet-2`, name: 'Popüler yemek verisi bekleniyor', slug: '', averageRating: 0, reviewCount: 0 },
-];
-
-const placeholderRestaurants = (cityName) => [
-  { id: `${toCityId(cityName)}-restoran-1`, name: `${cityName} popüler restoranı`, slug: '', address: `${cityName} merkez`, averageRating: 0, reviewCount: 0 },
-  { id: `${toCityId(cityName)}-restoran-2`, name: 'Restoran verisi bekleniyor', slug: '', address: `${cityName}`, averageRating: 0, reviewCount: 0 },
-];
 
 const TurkeyMap = () => {
   const navigate = useNavigate();
@@ -165,17 +157,14 @@ const TurkeyMap = () => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const visibleRegion = activeRegion || selectedRegion;
   const selectedFeatures = selectedRegion ? getRegionFeatures(selectedRegion.id) : [];
-  const zoomTransform = getZoomTransform(selectedRegion?.id);
+  const zoomTransform = getRegionZoomTransform(selectedRegion?.id);
   const selectedCityId = selectedProvince ? toCityId(selectedProvince) : '';
   const { foods: cityFoods, loading: foodsLoading, error: foodsError } = useFoodsByCity(selectedCityId, 5);
   const {
     restaurants: cityRestaurants,
     loading: restaurantsLoading,
     error: restaurantsError,
-  } = useRestaurantsByCity(selectedCityId, 5);
-  const displayFoods = selectedProvince && cityFoods.length ? cityFoods : selectedProvince ? placeholderFoods(selectedProvince) : [];
-  const displayRestaurants =
-    selectedProvince && cityRestaurants.length ? cityRestaurants : selectedProvince ? placeholderRestaurants(selectedProvince) : [];
+  } = useCityMapRestaurants(selectedCityId);
 
   const handleMouseMove = (event) => {
     const bounds = event.currentTarget.closest('[data-map-container]')?.getBoundingClientRect();
@@ -191,14 +180,7 @@ const TurkeyMap = () => {
   };
 
   const handleProvinceClick = (region, provinceName) => {
-    if (!selectedRegion || selectedRegion.id !== region.id) {
-      setSelectedRegion(region);
-      setActiveRegion(region);
-      setSelectedProvince(null);
-      setIsMenuClosing(false);
-      return;
-    }
-
+    setSelectedRegion(region);
     setActiveRegion(region);
     setSelectedProvince(provinceName);
     setIsMenuClosing(false);
@@ -226,38 +208,25 @@ const TurkeyMap = () => {
   };
 
   return (
-    <section
-      className={
-        selectedProvince
-          ? 'fixed inset-0 z-50 flex flex-col bg-slate-50 p-4'
-          : 'space-y-4'
-      }
-    >
+    <section className={selectedProvince ? 'fixed inset-0 z-50 flex flex-col bg-slate-50 p-4' : 'space-y-4'}>
       <style>
         {`
           @keyframes cityPanelIn {
-            from {
-              transform: translateX(110%);
-            }
-            to {
-              transform: translateX(0);
-            }
+            from { transform: translateX(110%); }
+            to { transform: translateX(0); }
           }
 
           @keyframes cityPanelOut {
-            from {
-              transform: translateX(0);
-            }
-            to {
-              transform: translateX(110%);
-            }
+            from { transform: translateX(0); }
+            to { transform: translateX(110%); }
           }
         `}
       </style>
 
       <div
-        className={`relative overflow-hidden rounded-lg p-3 shadow-sm transition-all duration-500 ${selectedProvince ? 'min-h-0 flex-1 pr-0 lg:mr-[420px]' : ''
-          }`}
+        className={`relative overflow-hidden rounded-lg bg-white p-3 shadow-sm transition-all duration-500 ${
+          selectedProvince ? 'min-h-0 flex-1 pr-0 lg:mr-[420px]' : ''
+        }`}
         data-map-container
         onMouseLeave={() => setActiveRegion(selectedRegion)}
       >
@@ -268,20 +237,20 @@ const TurkeyMap = () => {
               onClick={handleResetMap}
               type="button"
             >
-              Tüm Türkiye
+              Tum Turkiye
             </button>
             <button
               className="rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-700"
               onClick={handleRegionPageClick}
               type="button"
             >
-              Bölge Sayfası
+              Bolge Sayfasi
             </button>
           </div>
         )}
 
         <svg
-          aria-label="Türkiye'nin 7 coğrafi bölgesini gösteren etkileşimli harita"
+          aria-label="Turkiye sehir restoran haritasi"
           className={`${selectedProvince ? 'h-full min-h-[520px]' : 'h-[480px]'} w-full transition-all duration-500`}
           role="img"
           viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
@@ -345,7 +314,7 @@ const TurkeyMap = () => {
                   strokeWidth={isSelectedProvince ? 1.55 : isActive || isSelected ? 0.95 : 0.45}
                   style={{
                     cursor: region ? 'pointer' : 'default',
-                    opacity: hasSelectedRegion && !isSelected ? 0.14 : isSelectedProvince ? 1 : isActive || isSelected ? 0.98 : 0.86,
+                    opacity: hasSelectedRegion && !isSelected ? 0.1 : isSelectedProvince ? 1 : isActive || isSelected ? 0.92 : 0.76,
                     transition: 'filter 180ms ease, opacity 160ms ease, stroke 160ms ease, stroke-width 160ms ease',
                   }}
                   tabIndex={region ? 0 : -1}
@@ -353,36 +322,38 @@ const TurkeyMap = () => {
               );
             })}
 
-            {selectedFeatures.map((feature) => {
-              const provinceName = feature.properties.name;
-              const center = getFeatureCenter(feature);
+            {!selectedProvince &&
+              selectedFeatures.map((feature) => {
+                const provinceName = feature.properties.name;
+                const center = getFeatureCenter(feature);
 
-              return (
-                <g
-                  key={`city-${provinceName}`}
-                  style={{
-                    opacity: selectedRegion ? 1 : 0,
-                    transition: 'opacity 260ms ease 180ms',
-                  }}
-                  transform={`translate(${center.x.toFixed(2)} ${center.y.toFixed(2)})`}
-                  pointerEvents="none"
-                >
-                  <circle fill="#111827" r="2.8" stroke="#ffffff" strokeWidth="1" />
-                  <text
-                    fill="#111827"
-                    fontSize="8"
-                    fontWeight="700"
-                    paintOrder="stroke"
-                    stroke="#ffffff"
-                    strokeWidth="2.2"
-                    textAnchor="middle"
-                    y="-6"
+                return (
+                  <g
+                    key={`city-${provinceName}`}
+                    pointerEvents="none"
+                    style={{
+                      opacity: selectedRegion ? 1 : 0,
+                      transition: 'opacity 260ms ease 180ms',
+                    }}
+                    transform={`translate(${center.x.toFixed(2)} ${center.y.toFixed(2)})`}
                   >
-                    {provinceName}
-                  </text>
-                </g>
-              );
-            })}
+                    <circle fill="#111827" r="2.8" stroke="#ffffff" strokeWidth="1" />
+                    <text
+                      fill="#111827"
+                      fontSize="8"
+                      fontWeight="700"
+                      paintOrder="stroke"
+                      stroke="#ffffff"
+                      strokeWidth="2.2"
+                      textAnchor="middle"
+                      y="-6"
+                    >
+                      {provinceName}
+                    </text>
+                  </g>
+                );
+              })}
+
           </g>
         </svg>
 
@@ -395,20 +366,22 @@ const TurkeyMap = () => {
             }}
           >
             <p className="font-semibold text-slate-900">{visibleRegion.name}</p>
-            <p className="mt-1 text-xs text-slate-500">{regionStats[visibleRegion.id]?.cityCount} şehir</p>
+            <p className="mt-1 text-xs text-slate-500">{regionStats[visibleRegion.id]?.cityCount} sehir</p>
             <div className="mt-3 flex items-center justify-between rounded bg-slate-50 px-2 py-1">
-              <span className="text-xs text-slate-600">Öne çıkan</span>
+              <span className="text-xs text-slate-600">One cikan</span>
               <span className="text-xs font-medium text-slate-900">{regionStats[visibleRegion.id]?.highlight}</span>
             </div>
-            <p className="mt-2 text-xs text-amber-700">★ {regionStats[visibleRegion.id]?.rating} kullanıcı puanı</p>
+            <p className="mt-2 text-xs text-amber-700">{regionStats[visibleRegion.id]?.rating} kullanici puani</p>
           </div>
         )}
 
         {selectedRegion && (
           <div className="absolute bottom-4 right-4 z-20 max-w-xs rounded-md border bg-white/95 p-3 text-sm shadow-lg">
-            <p className="font-semibold text-slate-900">{selectedRegion.name}</p>
+            <p className="font-semibold text-slate-900">{selectedProvince || selectedRegion.name}</p>
             <p className="mt-1 text-xs text-slate-600">
-              {selectedFeatures.length} şehir gösteriliyor. Şehir adları bir sonraki adımda hover lezzet tooltipleriyle bağlanacak.
+              {selectedProvince
+                ? 'Restoranlar performans icin harita uzerinde pinlenmeden panelde listelenir.'
+                : `${selectedFeatures.length} sehir gosteriliyor. Bir sehre tiklayarak restoranlari gor.`}
             </p>
           </div>
         )}
@@ -423,72 +396,78 @@ const TurkeyMap = () => {
         >
           <div className="flex items-start justify-between gap-4 border-b p-5">
             <div>
-              <p className="text-xs font-semibold uppercase text-red-700">Şehir rehberi</p>
+              <p className="text-xs font-semibold uppercase text-red-700">Sehir rehberi</p>
               <h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedProvince}</h2>
               <p className="mt-1 text-sm text-slate-500">{selectedRegion?.name}</p>
               <Link className="mt-3 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/cities/${selectedCityId}`}>
-                Şehir sayfasına git
+                Sehir sayfasina git
               </Link>
             </div>
             <button
-              aria-label="Şehir menüsünü kapat"
+              aria-label="Sehir menusunu kapat"
               className="flex h-9 w-9 items-center justify-center rounded border text-xl leading-none text-slate-700 transition hover:bg-slate-50"
               onClick={handleCloseCityMenu}
               type="button"
             >
-              ×
+              x
             </button>
           </div>
 
           <div className="h-[calc(100%-88px)] space-y-6 overflow-y-auto p-5">
             <section>
-              <h3 className="font-semibold text-slate-950">Popüler Yemekler</h3>
-              {foodsLoading && <p className="mt-3 text-sm text-slate-500">Yemekler yükleniyor...</p>}
-              {foodsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
+              <h3 className="font-semibold text-slate-950">Populer Restoranlar</h3>
+              {restaurantsLoading && <p className="mt-3 text-sm text-slate-500">Restoranlar yukleniyor...</p>}
+              {restaurantsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{restaurantsError.message}</p>}
+              {!restaurantsLoading && !cityRestaurants.length && (
+                <p className="mt-3 rounded border border-dashed bg-white p-3 text-sm text-slate-500">
+                  Bu sehir icin restoran kaydi bekleniyor.
+                </p>
+              )}
               <div className="mt-3 space-y-3">
-                {displayFoods.map((food) => {
-                  const foodPath = food.slug ? `/foods/${food.slug}` : `/foods/${food.id}`;
-
-                  return (
-                    <Link
-                      className="block rounded border p-3 transition hover:border-slate-400 hover:bg-slate-50"
-                      key={food.id}
-                      to={foodPath}
-                    >
-                      <p className="font-medium text-slate-900">{food.name}</p>
-                      <RatingLine item={food} />
-                    </Link>
-                  );
-                })}
+                {cityRestaurants.map((restaurant) => (
+                  <Link
+                    className="block rounded border p-3 transition hover:border-slate-400 hover:bg-slate-50"
+                    key={restaurant.id}
+                    to={getRestaurantPath(restaurant)}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-slate-900">{restaurant.name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{restaurant.address || `${selectedProvince} konumunda`}</p>
+                      </div>
+                      <span className="rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">Panel</span>
+                    </div>
+                    <RatingLine item={restaurant} />
+                  </Link>
+                ))}
               </div>
             </section>
 
             <section>
-              <h3 className="font-semibold text-slate-950">Popüler Restoranlar</h3>
-              {restaurantsLoading && <p className="mt-3 text-sm text-slate-500">Restoranlar yükleniyor...</p>}
-              {restaurantsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{restaurantsError.message}</p>}
+              <h3 className="font-semibold text-slate-950">Sehirde One Cikan Lezzetler</h3>
+              {foodsLoading && <p className="mt-3 text-sm text-slate-500">Yemekler yukleniyor...</p>}
+              {foodsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
+              {!foodsLoading && !cityFoods.length && (
+                <p className="mt-3 rounded border border-dashed bg-white p-3 text-sm text-slate-500">
+                  Bu sehir icin lezzet kaydi bekleniyor.
+                </p>
+              )}
               <div className="mt-3 space-y-3">
-                {displayRestaurants.map((restaurant) => {
-                  const restaurantPath = restaurant.slug ? `/restaurants/${restaurant.slug}` : `/restaurants/${restaurant.id}`;
-
-                  return (
-                    <Link
-                      className="block rounded border p-3 transition hover:border-slate-400 hover:bg-slate-50"
-                      key={restaurant.id}
-                      to={restaurantPath}
-                    >
-                      <p className="font-medium text-slate-900">{restaurant.name}</p>
-                      <p className="mt-1 text-xs text-slate-500">{restaurant.address || `${selectedProvince} konumunda`}</p>
-                      <RatingLine item={restaurant} />
-                    </Link>
-                  );
-                })}
+                {cityFoods.map((food) => (
+                  <Link
+                    className="block rounded border p-3 transition hover:border-slate-400 hover:bg-slate-50"
+                    key={food.id}
+                    to={food.slug ? `/foods/${food.slug}` : `/foods/${food.id}`}
+                  >
+                    <p className="font-medium text-slate-900">{food.name}</p>
+                    <RatingLine item={food} />
+                  </Link>
+                ))}
               </div>
             </section>
           </div>
         </aside>
       )}
-
     </section>
   );
 };

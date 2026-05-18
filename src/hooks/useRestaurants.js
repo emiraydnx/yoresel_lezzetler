@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react';
 import { firestoreQuery, getCollection, getDocument } from '../firebase/firestore';
+import { regions as staticRegions } from '../data/turkeyRegionsGeo';
+
+const toNumber = (value) => Number(value || 0);
+
+const getRestaurantScore = (restaurant) =>
+  restaurant.featuredScore ?? toNumber(restaurant.averageRating) * 100 + toNumber(restaurant.reviewCount);
+
+const sortRestaurantsByScore = (restaurants) =>
+  [...restaurants].sort((first, second) => {
+    const scoreDifference = getRestaurantScore(second) - getRestaurantScore(first);
+    return scoreDifference || toNumber(second.reviewCount) - toNumber(first.reviewCount);
+  });
 
 export const useTopRestaurants = (resultLimit = 6) => {
   const [restaurants, setRestaurants] = useState([]);
@@ -9,13 +21,10 @@ export const useTopRestaurants = (resultLimit = 6) => {
   useEffect(() => {
     let isMounted = true;
 
-    getCollection('restaurants', [
-      firestoreQuery.orderBy('averageRating', 'desc'),
-      firestoreQuery.limit(resultLimit),
-    ])
+    getCollection('restaurants')
       .then((data) => {
         if (isMounted) {
-          setRestaurants(data);
+          setRestaurants(sortRestaurantsByScore(data).slice(0, resultLimit));
         }
       })
       .catch((err) => {
@@ -58,11 +67,7 @@ export const useRestaurantsByCity = (cityId, resultLimit = 5) => {
       .then((data) => {
         if (isMounted) {
           setRestaurants(
-            data
-              .sort((first, second) => {
-                const ratingDifference = Number(second.averageRating || 0) - Number(first.averageRating || 0);
-                return ratingDifference || Number(second.reviewCount || 0) - Number(first.reviewCount || 0);
-              })
+            sortRestaurantsByScore(data)
               .slice(0, resultLimit)
           );
         }
@@ -107,11 +112,7 @@ export const useRestaurantsByRegion = (regionId, resultLimit = 12) => {
       .then((data) => {
         if (isMounted) {
           setRestaurants(
-            data
-              .sort((first, second) => {
-                const ratingDifference = Number(second.averageRating || 0) - Number(first.averageRating || 0);
-                return ratingDifference || Number(second.reviewCount || 0) - Number(first.reviewCount || 0);
-              })
+            sortRestaurantsByScore(data)
               .slice(0, resultLimit)
           );
         }
@@ -185,4 +186,51 @@ export const useRestaurantDetail = (restaurantSlug) => {
   }, [restaurantSlug]);
 
   return { restaurant, loading, error };
+};
+
+export const useCityMapRestaurants = (cityId) => useRestaurantsByCity(cityId, 80);
+
+export const useTopRestaurantsByRegion = () => {
+  const [regions, setRegions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadTopRestaurantsByRegion = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const restaurants = await getCollection('restaurants');
+        const rankedRestaurants = sortRestaurantsByScore(restaurants);
+
+        const regionRows = staticRegions.map((region) => ({
+          ...region,
+          restaurant: rankedRestaurants.find((restaurant) => restaurant.regionId === region.id) || null,
+        }));
+
+        if (isMounted) {
+          setRegions(regionRows);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadTopRestaurantsByRegion();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return { regions, loading, error };
 };

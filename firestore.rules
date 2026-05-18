@@ -1,0 +1,113 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return isSignedIn() && userDoc().data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidReviewTarget() {
+      return request.resource.data.targetType in ['food', 'restaurant']
+        && request.resource.data.targetId is string
+        && request.resource.data.targetId.size() > 0;
+    }
+
+    match /regions/{regionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /Regions/{regionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /foods/{foodId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /restaurants/{restaurantId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /restaurantFoods/{restaurantFoodId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isEmailVerified()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() > 0
+        && request.resource.data.status == 'pending'
+        && isValidReviewTarget();
+      allow update, delete: if isAdmin();
+    }
+
+    match /reviewReplies/{replyId} {
+      allow read: if true;
+      allow create: if isEmailVerified()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() > 0;
+      allow update, delete: if isAdmin();
+    }
+
+    match /follows/{followId} {
+      allow read: if true;
+      allow create: if isEmailVerified()
+        && request.resource.data.followerId == request.auth.uid
+        && request.resource.data.followingId is string
+        && request.resource.data.followingId != request.auth.uid
+        && request.resource.data.status == 'active';
+      allow update: if isEmailVerified()
+        && resource.data.followerId == request.auth.uid
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in ['active', 'inactive'];
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId)
+        && request.resource.data.role == 'user';
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          'displayName',
+          'photoURL',
+          'title',
+          'updatedAt'
+        ])
+        || isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

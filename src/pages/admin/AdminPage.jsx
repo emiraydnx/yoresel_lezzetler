@@ -13,6 +13,11 @@ const adminSections = [
     title: 'Restoranlar',
   },
   {
+    description: 'Restoranlarin sundugu yoresel lezzetleri eslestir.',
+    path: '/admin/restaurant-foods',
+    title: 'Restoran-Lezzet Iliskileri',
+  },
+  {
     description: 'Kullanici yorumlarini onayla, reddet, duzenle veya sil.',
     path: '/admin/reviews',
     title: 'Yorumlar',

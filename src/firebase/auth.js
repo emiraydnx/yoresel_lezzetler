@@ -26,6 +26,7 @@ export const registerWithEmail = async ({ email, password, displayName }) => {
     photoURL: credential.user.photoURL || '',
     createdAt: serverTimestamp(),
   });
+  await sendEmailVerification(credential.user);
 
   return credential.user;
 };
