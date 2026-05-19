@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginGoogle } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,10 +28,37 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setError('');
+    setIsSubmitting(true);
+
+    try {
+      await loginGoogle();
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Google ile giris yapilirken bir hata olustu.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <form className="mx-auto max-w-md space-y-4 rounded border bg-white p-6" onSubmit={handleSubmit}>
       <h1 className="text-2xl font-bold">Giriş Yap</h1>
       {error && <p className="rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      <button
+        className="w-full rounded border border-slate-300 bg-white px-4 py-2 font-medium text-slate-800 disabled:cursor-not-allowed disabled:bg-slate-100"
+        disabled={isSubmitting}
+        onClick={handleGoogleLogin}
+        type="button"
+      >
+        Google ile Giris Yap
+      </button>
+      <div className="flex items-center gap-3 text-xs uppercase text-slate-400">
+        <span className="h-px flex-1 bg-slate-200" />
+        veya
+        <span className="h-px flex-1 bg-slate-200" />
+      </div>
       <label className="block text-sm font-medium">
         E-posta
         <input

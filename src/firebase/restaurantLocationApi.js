@@ -10,13 +10,14 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { db } from './config';
+import { httpsCallable } from 'firebase/functions';
+import { db, functions } from './config';
 
-const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 const OPENSTREETMAP_SOURCE = 'openstreetmap';
 const DEFAULT_RADIUS_METERS = 50000;
 const MAX_RADIUS_METERS = 100000;
 const MAX_SEARCH_LIMIT = 30;
+const searchOpenStreetMapRestaurants = httpsCallable(functions, 'searchOpenStreetMapRestaurants');
 
 const toSlug = (value = '') =>
   value
@@ -57,156 +58,6 @@ const getCityCoordinates = (city) => {
   return null;
 };
 
-const getElementCoordinates = (element) => {
-  if (typeof element.lat === 'number' && typeof element.lon === 'number') {
-    return { latitude: element.lat, longitude: element.lon };
-  }
-
-  if (element.center) {
-    return getCoordinatePair({
-      latitude: element.center.lat,
-      longitude: element.center.lon,
-    });
-  }
-
-  return null;
-};
-
-const normalizeUrl = (value = '') => {
-  const trimmedValue = String(value || '').trim();
-
-  if (!trimmedValue) {
-    return '';
-  }
-
-  if (/^https?:\/\//i.test(trimmedValue)) {
-    return trimmedValue;
-  }
-
-  if (/^www\./i.test(trimmedValue)) {
-    return `https://${trimmedValue}`;
-  }
-
-  return '';
-};
-
-const normalizeWikimediaImage = (value = '') => {
-  const trimmedValue = String(value || '').trim();
-
-  if (!trimmedValue || /^category:/i.test(trimmedValue)) {
-    return '';
-  }
-
-  const fileName = trimmedValue.replace(/^file:/i, '').trim();
-
-  return fileName
-    ? `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}`
-    : '';
-};
-
-const uniqueValues = (values) => [...new Set(values.filter(Boolean))];
-
-const getAddressFromTags = (tags = {}, city) => {
-  if (tags['addr:full']) {
-    return tags['addr:full'];
-  }
-
-  const streetLine = [tags['addr:street'], tags['addr:housenumber']].filter(Boolean).join(' ');
-  const districtLine = [
-    tags['addr:neighbourhood'],
-    tags['addr:suburb'],
-    tags['addr:quarter'],
-    tags['addr:district'],
-  ].filter(Boolean);
-  const cityLine = [
-    tags['addr:postcode'],
-    tags['addr:city'] || city?.name,
-    tags['addr:province'],
-    tags['addr:state'],
-  ].filter(Boolean);
-
-  return uniqueValues([streetLine, ...districtLine, ...cityLine]).join(', ');
-};
-
-const getImageUrlsFromTags = (tags = {}) =>
-  uniqueValues([
-    normalizeUrl(tags.image),
-    normalizeUrl(tags['contact:image']),
-    normalizeUrl(tags['image:0']),
-    normalizeUrl(tags['image:1']),
-    normalizeWikimediaImage(tags.wikimedia_commons),
-    normalizeWikimediaImage(tags['wikimedia_commons:1']),
-  ]);
-
-const buildOverpassQuery = ({ city, radiusMeters }) => {
-  const coordinates = getCityCoordinates(city);
-
-  if (!coordinates) {
-    throw new Error(`${city?.name || city?.id || 'Seçilen şehir'} için geoPoint/location alanı bekleniyor.`);
-  }
-
-  const lat = coordinates.latitude.toFixed(6);
-  const lon = coordinates.longitude.toFixed(6);
-
-  return `
-[out:json][timeout:25];
-(
-  node["amenity"="restaurant"](around:${radiusMeters},${lat},${lon});
-  way["amenity"="restaurant"](around:${radiusMeters},${lat},${lon});
-  relation["amenity"="restaurant"](around:${radiusMeters},${lat},${lon});
-);
-out center tags;
-`;
-};
-
-const normalizeOverpassElement = ({ element, city }) => {
-  const coordinates = getElementCoordinates(element);
-  const tags = element.tags || {};
-  const name = tags.name || tags['name:tr'] || tags['name:en'] || '';
-
-  if (!element.id || !element.type || !name || !coordinates) {
-    return null;
-  }
-
-  const sourcePlaceId = `${element.type}/${element.id}`;
-  const imageUrls = getImageUrlsFromTags(tags);
-
-  return {
-    address: getAddressFromTags(tags, city),
-    cityId: city.id,
-    cuisine: tags.cuisine || '',
-    externalTypes: ['amenity:restaurant', tags.cuisine ? `cuisine:${tags.cuisine}` : ''].filter(Boolean),
-    location: [coordinates.latitude, coordinates.longitude],
-    name,
-    osmType: element.type,
-    phone: tags.phone || tags['contact:phone'] || '',
-    primaryType: 'restaurant',
-    regionId: city.regionId || '',
-    imageUrl: imageUrls[0] || '',
-    imageUrls,
-    slug: toSlug(`${name}_${city.id}`),
-    source: OPENSTREETMAP_SOURCE,
-    sourcePlaceId,
-    website: tags.website || tags['contact:website'] || '',
-  };
-};
-
-const getSearchText = (restaurant) =>
-  [restaurant.name, restaurant.address, restaurant.cuisine]
-    .filter(Boolean)
-    .join(' ')
-    .toLocaleLowerCase('tr-TR');
-
-const filterRestaurantsByQuery = ({ restaurants, searchQuery }) => {
-  const normalizedQuery = searchQuery.trim().toLocaleLowerCase('tr-TR');
-
-  if (!normalizedQuery || ['restoran', 'restaurant', 'lokanta'].includes(normalizedQuery)) {
-    return restaurants;
-  }
-
-  return restaurants.filter((restaurant) => getSearchText(restaurant).includes(normalizedQuery));
-};
-
 const getExistingRestaurantRefBySourcePlaceId = async (sourcePlaceId) => {
   const snapshot = await getDocs(
     query(
@@ -245,7 +96,7 @@ const sanitizeRestaurantForImport = (restaurant, city) => {
     : null;
 
   if (!restaurant.sourcePlaceId || !restaurant.name || !coordinates) {
-    throw new Error('Her restoran için sourcePlaceId, name ve location zorunludur.');
+    throw new Error('Her restoran icin sourcePlaceId, name ve location zorunludur.');
   }
 
   return {
@@ -271,57 +122,35 @@ const sanitizeRestaurantForImport = (restaurant, city) => {
 
 export const searchRestaurantLocations = async ({ city, pageSize, query: searchQuery, radiusMeters }) => {
   if (!city?.id) {
-    throw new Error('Şehir seçimi zorunludur.');
+    throw new Error('Sehir secimi zorunludur.');
   }
 
   const safeLimit = Math.max(1, Math.min(Number(pageSize || 10), MAX_SEARCH_LIMIT));
   const safeRadius = Math.max(1000, Math.min(Number(radiusMeters || DEFAULT_RADIUS_METERS), MAX_RADIUS_METERS));
-  const overpassQuery = buildOverpassQuery({ city, radiusMeters: safeRadius });
-  const body = new URLSearchParams({ data: overpassQuery });
+  const coordinates = getCityCoordinates(city);
 
-  let response;
-
-  try {
-    response = await fetch(OVERPASS_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body,
-    });
-  } catch (error) {
-    throw new Error(`OpenStreetMap Overpass istegi basarisiz oldu: ${error.message}`);
+  if (!coordinates) {
+    throw new Error(`${city?.name || city?.id || 'Secilen sehir'} icin geoPoint/location alani bekleniyor.`);
   }
 
-  const payload = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(payload.remark || 'OpenStreetMap Overpass restoran aramasi basarisiz oldu.');
-  }
-
-  const restaurants = filterRestaurantsByQuery({
-    restaurants: (payload.elements || [])
-      .map((element) => normalizeOverpassElement({ element, city }))
-      .filter(Boolean),
-    searchQuery: String(searchQuery || ''),
-  }).slice(0, safeLimit);
-
-  return {
+  const result = await searchOpenStreetMapRestaurants({
     city: {
       id: city.id,
       name: city.name || city.id,
       regionId: city.regionId || '',
+      coordinates,
     },
-    query: [searchQuery || 'restoran', city.name || city.id].filter(Boolean).join(' '),
+    pageSize: safeLimit,
+    query: String(searchQuery || ''),
     radiusMeters: safeRadius,
-    restaurants,
-    source: OPENSTREETMAP_SOURCE,
-  };
+  });
+
+  return result.data;
 };
 
 export const importRestaurantLocations = async ({ city, restaurants }) => {
   if (!city?.id) {
-    throw new Error('Şehir seçimi zorunludur.');
+    throw new Error('Sehir secimi zorunludur.');
   }
 
   const selectedRestaurants = Array.isArray(restaurants) ? restaurants.slice(0, MAX_SEARCH_LIMIT) : [];

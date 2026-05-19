@@ -6,6 +6,25 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+## reCAPTCHA Setup
+
+Registration uses Google reCAPTCHA before creating a Firebase Auth user.
+
+Client site key:
+
+```env
+REACT_APP_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+```
+
+Server secret key:
+
+```bash
+firebase functions:secrets:set RECAPTCHA_SECRET_KEY
+firebase deploy --only functions
+```
+
+The site key is public and is used by the browser widget. The secret key must stay on Firebase Functions and is used by `verifyRegistrationCaptcha` to call Google's `siteverify` endpoint.
+
 ### `npm start`
 
 Runs the app in the development mode.\

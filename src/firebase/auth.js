@@ -1,8 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updatePassword,
   updateProfile,
@@ -12,6 +14,24 @@ import { auth, db } from './config';
 
 export const listenToAuthChanges = (callback) => onAuthStateChanged(auth, callback);
 
+const createUserProfile = async (user, profile = {}) => {
+  await setDoc(doc(db, 'users', user.uid), {
+    displayName: profile.displayName || user.displayName || '',
+    email: profile.email || user.email || '',
+    role: 'user',
+    photoURL: profile.photoURL || user.photoURL || '',
+    createdAt: serverTimestamp(),
+  });
+};
+
+const syncExistingUserProfile = async (user) => {
+  await updateDoc(doc(db, 'users', user.uid), {
+    displayName: user.displayName || '',
+    photoURL: user.photoURL || '',
+    updatedAt: serverTimestamp(),
+  });
+};
+
 export const registerWithEmail = async ({ email, password, displayName }) => {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -19,13 +39,7 @@ export const registerWithEmail = async ({ email, password, displayName }) => {
     await updateProfile(credential.user, { displayName });
   }
 
-  await setDoc(doc(db, 'users', credential.user.uid), {
-    displayName: displayName || '',
-    email,
-    role: 'user',
-    photoURL: credential.user.photoURL || '',
-    createdAt: serverTimestamp(),
-  });
+  await createUserProfile(credential.user, { displayName, email });
   await sendEmailVerification(credential.user);
 
   return credential.user;
@@ -33,6 +47,22 @@ export const registerWithEmail = async ({ email, password, displayName }) => {
 
 export const loginWithEmail = async ({ email, password }) => {
   const credential = await signInWithEmailAndPassword(auth, email, password);
+  return credential.user;
+};
+
+export const loginWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+
+  const credential = await signInWithPopup(auth, provider);
+  const profile = await getUserProfile(credential.user.uid);
+
+  if (!profile) {
+    await createUserProfile(credential.user);
+  } else {
+    await syncExistingUserProfile(credential.user);
+  }
+
   return credential.user;
 };
 
