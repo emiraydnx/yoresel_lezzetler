@@ -88,10 +88,10 @@ const AdminReviews = () => {
 
         if (editingId) {
             await updateItem(editingId, payload);
-            setStatusMessage('Yorum guncellendi. Cloud Functions deploy edildiyse ilgili puan ve yorum sayisi otomatik yenilenir.');
+            setStatusMessage('Yorum güncellendi. Cloud Functions deploy edildiyse ilgili puan ve yorum sayısı otomatik yenilenir.');
         } else {
             await createItem(payload);
-            setStatusMessage('Yorum eklendi. Onayli kayitlar icin istatistikleri Cloud Functions gunceller.');
+            setStatusMessage('Yorum eklendi. Onaylı kayıtlar için istatistikleri Cloud Functions günceller.');
         }
 
         setForm(emptyForm);
@@ -128,8 +128,8 @@ const AdminReviews = () => {
         await updateItem(review.id, { status });
         setStatusMessage(
             status === 'approved'
-                ? 'Yorum onaylandi. Ortalama puan ve yorum sayisini Cloud Functions gunceller.'
-                : 'Yorum reddedildi. Ortalama puan ve yorum sayisini Cloud Functions gunceller.'
+                ? 'Yorum onaylandı. Ortalama puan ve yorum sayısını Cloud Functions günceller.'
+                : 'Yorum reddedildi. Ortalama puan ve yorum sayısını Cloud Functions günceller.'
         );
     };
 
@@ -138,11 +138,11 @@ const AdminReviews = () => {
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                     <p className="text-sm font-medium text-emerald-700">Admin / Reviews</p>
-                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Yorum Yonetimi</h1>
-                    <p className="mt-2 text-sm text-slate-600">reviews collection icin onay, duzenleme, ekleme ve silme.</p>
+                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Yorum Yönetimi</h1>
+                    <p className="mt-2 text-sm text-slate-600">reviews collection için onay, düzenleme, ekleme ve silme.</p>
                 </div>
                 <Link className="text-sm font-medium text-red-700 hover:text-red-900" to="/admin">
-                    Admin panele don
+                    Admin panele dön
                 </Link>
             </div>
 
@@ -152,7 +152,7 @@ const AdminReviews = () => {
                     <input className="mt-1 w-full rounded border px-3 py-2" name="userId" onChange={handleChange} required value={form.userId} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                    Kullanici Adi
+                    Kullanıcı Adı
                     <input className="mt-1 w-full rounded border px-3 py-2" name="userName" onChange={handleChange} value={form.userName} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
@@ -172,7 +172,7 @@ const AdminReviews = () => {
                         required
                         value={form.targetId}
                     >
-                        <option value="">{targetLoading ? 'Hedefler yukleniyor...' : 'Dokuman ID sec'}</option>
+                        <option value="">{targetLoading ? 'Hedefler yükleniyor...' : 'Doküman ID seç'}</option>
                         {hasLegacyTarget && <option value={form.targetId}>Mevcut hedef: {form.targetId}</option>}
                         {targetOptions.map((target) => (
                             <option key={target.id} value={target.id}>
@@ -201,7 +201,7 @@ const AdminReviews = () => {
                     <input className="mt-1 w-full rounded border bg-slate-50 px-3 py-2" name="restaurantName" readOnly value={form.restaurantName} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
-                    Sehir
+                    Şehir
                     <input className="mt-1 w-full rounded border px-3 py-2" name="cityName" onChange={handleChange} value={form.cityName} />
                 </label>
                 <label className="text-sm font-medium text-slate-700">
@@ -218,7 +218,7 @@ const AdminReviews = () => {
                 </label>
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
                     <input checked={form.isFeatured} name="isFeatured" onChange={handleChange} type="checkbox" />
-                    One cikan yorum
+                    Öne çıkan yorum
                 </label>
                 <label className="text-sm font-medium text-slate-700 md:col-span-2">
                     Yorum
@@ -226,7 +226,7 @@ const AdminReviews = () => {
                 </label>
                 <div className="flex gap-3 md:col-span-2">
                     <button className="rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={submitting} type="submit">
-                        {editingId ? 'Guncelle' : 'Ekle'}
+                        {editingId ? 'Güncelle' : 'Ekle'}
                     </button>
                     {editingId && (
                         <button className="rounded border px-4 py-2 text-sm" onClick={() => { setEditingId(null); setForm(emptyForm); }} type="button">
@@ -238,7 +238,7 @@ const AdminReviews = () => {
 
             {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
             {statusMessage && <p className="rounded border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{statusMessage}</p>}
-            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Yorumlar yukleniyor...</p>}
+            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Yorumlar yükleniyor...</p>}
 
             <div className="space-y-3">
                 {reviews.map((review) => (
@@ -246,7 +246,7 @@ const AdminReviews = () => {
                         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                             <div>
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <p className="font-semibold text-slate-950">{review.userName || review.userId || 'Kullanici'}</p>
+                                    <p className="font-semibold text-slate-950">{review.userName || review.userId || 'Kullanıcı'}</p>
                                     <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{review.status || 'approved'}</span>
                                     {review.isFeatured && <span className="rounded bg-amber-50 px-2 py-0.5 text-xs text-amber-700">featured</span>}
                                 </div>
@@ -258,7 +258,7 @@ const AdminReviews = () => {
                             <div className="flex shrink-0 flex-wrap gap-2">
                                 <button className="rounded border px-3 py-1 text-xs" onClick={() => handleQuickStatus(review, 'approved')} type="button">Onayla</button>
                                 <button className="rounded border px-3 py-1 text-xs" onClick={() => handleQuickStatus(review, 'rejected')} type="button">Reddet</button>
-                                <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(review)} type="button">Duzenle</button>
+                                <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(review)} type="button">Düzenle</button>
                                 <button className="rounded border border-red-200 px-3 py-1 text-xs text-red-700" onClick={() => handleDelete(review)} type="button">Sil</button>
                             </div>
                         </div>

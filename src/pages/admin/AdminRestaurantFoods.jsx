@@ -52,7 +52,7 @@ const AdminRestaurantFoods = () => {
   };
 
   const handleDelete = async (relation) => {
-    if (window.confirm(`${relation.restaurantName || relation.restaurantId} - ${relation.foodName || relation.foodId} iliskisi silinsin mi?`)) {
+    if (window.confirm(`${relation.restaurantName || relation.restaurantId} - ${relation.foodName || relation.foodId} ilişkisi silinsin mi?`)) {
       await deleteItem(relation.id);
     }
   };
@@ -62,13 +62,13 @@ const AdminRestaurantFoods = () => {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-medium text-emerald-700">Admin / Restaurant Foods</p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-950">Restoran-Lezzet Iliskileri</h1>
+          <h1 className="mt-2 text-2xl font-bold text-slate-950">Restoran-Lezzet İlişkileri</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Bir restoranin hangi yoresel lezzetleri sundugunu restaurantFoods collection ile yonet.
+            Bir restoranın hangi yöresel lezzetleri sunduğunu restaurantFoods collection ile yönet.
           </p>
         </div>
         <Link className="text-sm font-medium text-red-700 hover:text-red-900" to="/admin">
-          Admin panele don
+          Admin panele dön
         </Link>
       </div>
 
@@ -83,7 +83,7 @@ const AdminRestaurantFoods = () => {
             required
             value={form.restaurantId}
           >
-            <option value="">Restoran sec</option>
+            <option value="">Restoran seç</option>
             {restaurants.map((restaurant) => (
               <option key={restaurant.id} value={restaurant.id}>
                 {restaurant.name || restaurant.id}
@@ -102,7 +102,7 @@ const AdminRestaurantFoods = () => {
             required
             value={form.foodId}
           >
-            <option value="">Lezzet sec</option>
+            <option value="">Lezzet seç</option>
             {foods.map((food) => (
               <option key={food.id} value={food.id}>
                 {food.name || food.id}
@@ -113,16 +113,16 @@ const AdminRestaurantFoods = () => {
 
         <div className="md:col-span-2">
           <button className="rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={submitting} type="submit">
-            {submitting ? 'Kaydediliyor...' : 'Iliski Ekle'}
+            {submitting ? 'Kaydediliyor...' : 'İlişki Ekle'}
           </button>
         </div>
       </form>
 
       {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
-      {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Iliskiler yukleniyor...</p>}
+      {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">İlişkiler yükleniyor...</p>}
       {!loading && !relations.length && (
         <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">
-          Henuz restoran-lezzet iliskisi yok.
+          Henüz restoran-lezzet ilişkisi yok.
         </p>
       )}
 

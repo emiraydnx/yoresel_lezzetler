@@ -22,7 +22,7 @@ const FoodCard = ({ food }) => (
         )}
         <div className="space-y-3 p-4">
             <h3 className="font-semibold text-slate-950">{food.name || 'Lezzet bilgisi bekleniyor'}</h3>
-            <p className="line-clamp-2 text-sm leading-6 text-slate-600">{food.description || 'Aciklama bekleniyor.'}</p>
+            <p className="line-clamp-2 text-sm leading-6 text-slate-600">{food.description || 'Açıklama bekleniyor.'}</p>
             <StartRating rating={food.averageRating} reviewCount={food.reviewCount} />
         </div>
     </Link>
@@ -59,13 +59,13 @@ const CityPage = () => {
     } = useRestaurantsByCity(city?.id, 50);
 
     if (cityLoading) {
-        return <EmptyState>Sehir bilgisi yukleniyor...</EmptyState>;
+        return <EmptyState>Şehir bilgisi yükleniyor...</EmptyState>;
     }
 
     if (cityError) {
         return (
             <section className="rounded border border-red-200 bg-red-50 p-6">
-                <h1 className="text-2xl font-bold text-red-800">Sehir yuklenemedi</h1>
+                <h1 className="text-2xl font-bold text-red-800">Şehir yüklenemedi</h1>
                 <p className="mt-2 text-sm text-red-700">{cityError.message}</p>
             </section>
         );
@@ -74,9 +74,9 @@ const CityPage = () => {
     if (!city) {
         return (
             <section className="rounded border bg-white p-6">
-                <h1 className="text-2xl font-bold">Sehir bulunamadi</h1>
+                <h1 className="text-2xl font-bold">Şehir bulunamadı</h1>
                 <Link className="mt-4 inline-flex rounded bg-slate-900 px-4 py-2 text-sm text-white" to="/">
-                    Haritaya Don
+                    Haritaya Dön
                 </Link>
             </section>
         );
@@ -85,15 +85,15 @@ const CityPage = () => {
     return (
         <section className="space-y-8">
             <div className="rounded border bg-white p-6">
-                <p className="text-sm font-medium text-emerald-700">Sehir rehberi</p>
+                <p className="text-sm font-medium text-emerald-700">Şehir rehberi</p>
                 <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-950">{city.name}</h1>
-                        <p className="mt-3 max-w-3xl leading-7 text-slate-600">{city.description || 'Bu sehir icin aciklama bekleniyor.'}</p>
+                        <p className="mt-3 max-w-3xl leading-7 text-slate-600">{city.description || 'Bu şehir için açıklama bekleniyor.'}</p>
                     </div>
                     {city.regionId && (
                         <Link className="rounded border px-4 py-2 text-sm font-medium hover:bg-slate-50" to={`/regions/${city.regionId}`}>
-                            Bolgeye Git
+                            Bölgeye Git
                         </Link>
                     )}
                 </div>
@@ -102,13 +102,13 @@ const CityPage = () => {
             <section className="space-y-4">
                 <div className="flex items-end justify-between border-b pb-3">
                     <div>
-                        <h2 className="text-xl font-bold text-slate-950">Yoresel Lezzetler</h2>
-                        <p className="mt-1 text-sm text-slate-600">Firestore foods collection icinde cityId alanina gore listelenir.</p>
+                        <h2 className="text-xl font-bold text-slate-950">Yöresel Lezzetler</h2>
+                        <p className="mt-1 text-sm text-slate-600">Firestore foods collection içinde cityId alanına göre listelenir.</p>
                     </div>
                 </div>
-                {foodsLoading && <EmptyState>Lezzetler yukleniyor...</EmptyState>}
+                {foodsLoading && <EmptyState>Lezzetler yükleniyor...</EmptyState>}
                 {foodsError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
-                {!foodsLoading && !foods.length && <EmptyState>Bu sehir icin henuz lezzet kaydi yok.</EmptyState>}
+                {!foodsLoading && !foods.length && <EmptyState>Bu şehir için henüz lezzet kaydı yok.</EmptyState>}
                 <div className="grid gap-4 md:grid-cols-3">
                     {foods.map((food) => (
                         <FoodCard food={food} key={food.id} />
@@ -120,12 +120,12 @@ const CityPage = () => {
                 <div className="flex items-end justify-between border-b pb-3">
                     <div>
                         <h2 className="text-xl font-bold text-slate-950">Restoranlar</h2>
-                        <p className="mt-1 text-sm text-slate-600">Firestore restaurants collection icinde cityId alanina gore listelenir.</p>
+                        <p className="mt-1 text-sm text-slate-600">Firestore restaurants collection içinde cityId alanına göre listelenir.</p>
                     </div>
                 </div>
-                {restaurantsLoading && <EmptyState>Restoranlar yukleniyor...</EmptyState>}
+                {restaurantsLoading && <EmptyState>Restoranlar yükleniyor...</EmptyState>}
                 {restaurantsError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{restaurantsError.message}</p>}
-                {!restaurantsLoading && !restaurants.length && <EmptyState>Bu sehir icin henuz restoran kaydi yok.</EmptyState>}
+                {!restaurantsLoading && !restaurants.length && <EmptyState>Bu şehir için henüz restoran kaydı yok.</EmptyState>}
                 <div className="grid gap-4 md:grid-cols-2">
                     {restaurants.map((restaurant) => (
                         <RestaurantCard key={restaurant.id} restaurant={restaurant} />

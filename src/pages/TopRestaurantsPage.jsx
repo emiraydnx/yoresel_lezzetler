@@ -8,17 +8,17 @@ const TopRestaurantsPage = () => {
     return (
         <section className="space-y-6">
             <div>
-                <p className="text-sm font-medium text-emerald-700">Restoran siralamasi</p>
-                <h1 className="mt-2 text-3xl font-bold text-slate-950">En Yuksek Puanli Restoranlar</h1>
+                <p className="text-sm font-medium text-emerald-700">Restoran sıralaması</p>
+                <h1 className="mt-2 text-3xl font-bold text-slate-950">En Yüksek Puanlı Restoranlar</h1>
                 <p className="mt-3 max-w-3xl text-slate-600">
-                    Firestore restaurants collection verileri averageRating alanina gore listelenir.
+                    Firestore restaurants collection verileri averageRating alanına göre listelenir.
                 </p>
             </div>
 
-            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Restoranlar yukleniyor...</p>}
+            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Restoranlar yükleniyor...</p>}
             {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
             {!loading && !restaurants.length && (
-                <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Gosterilecek restoran bulunamadi.</p>
+                <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Gösterilecek restoran bulunamadı.</p>
             )}
 
             <div className="grid gap-4 md:grid-cols-2">

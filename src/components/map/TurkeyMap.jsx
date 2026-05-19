@@ -84,6 +84,44 @@ const getFeatureCenter = (feature) => {
   };
 };
 
+const getRingAreaCenter = (ring) => {
+  const points = ring.map(projectCoordinate);
+  let area = 0;
+  let centerX = 0;
+  let centerY = 0;
+
+  points.forEach(([x, y], index) => {
+    const [previousX, previousY] = points[index === 0 ? points.length - 1 : index - 1];
+    const cross = previousX * y - x * previousY;
+
+    area += cross;
+    centerX += (previousX + x) * cross;
+    centerY += (previousY + y) * cross;
+  });
+
+  area /= 2;
+
+  if (Math.abs(area) < 0.000001) {
+    return null;
+  }
+
+  return {
+    area: Math.abs(area),
+    x: centerX / (6 * area),
+    y: centerY / (6 * area),
+  };
+};
+
+const getFeatureLabelCenter = (feature) => {
+  const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+  const largestPolygonCenter = polygons
+    .map((polygon) => getRingAreaCenter(polygon[0]))
+    .filter(Boolean)
+    .sort((first, second) => second.area - first.area)[0];
+
+  return largestPolygonCenter || getFeatureCenter(feature);
+};
+
 const getRegionFeatures = (regionId) =>
   turkeyFeatures.filter((feature) => provinceToRegion[feature.properties.name] === regionId);
 
@@ -113,9 +151,9 @@ const getRegionZoomTransform = (regionId) => {
 
 const cityIdOverrides = {
   Afyon: 'afyonkarahisar',
-  'K. MaraÅŸ': 'kahramanmaras',
+  'K. Maraş': 'kahramanmaras',
   'K. Maras': 'kahramanmaras',
-  MaraÅŸ: 'kahramanmaras',
+  Maraş: 'kahramanmaras',
   Maras: 'kahramanmaras',
 };
 
@@ -126,12 +164,12 @@ const toCityId = (provinceName = '') => {
 
   return provinceName
     .toLocaleLowerCase('tr-TR')
-    .replace(/ç|Ã§/g, 'c')
-    .replace(/ğ|ÄŸ/g, 'g')
-    .replace(/ı|Ä±/g, 'i')
-    .replace(/ö|Ã¶/g, 'o')
-    .replace(/ş|ÅŸ/g, 's')
-    .replace(/ü|Ã¼/g, 'u')
+    .replace(/ç/g, 'c')
+    .replace(/ğ/g, 'g')
+    .replace(/ı/g, 'i')
+    .replace(/ö/g, 'o')
+    .replace(/ş/g, 's')
+    .replace(/ü/g, 'u')
     .replace(/\./g, '')
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9]/g, '');
@@ -179,7 +217,8 @@ const TurkeyMap = () => {
     });
   };
 
-  const handleProvinceClick = (region, provinceName) => {
+  const handleProvinceClick = (event, region, provinceName) => {
+    event.stopPropagation();
     setSelectedRegion(region);
     setActiveRegion(region);
     setSelectedProvince(provinceName);
@@ -237,20 +276,20 @@ const TurkeyMap = () => {
               onClick={handleResetMap}
               type="button"
             >
-              Tum Turkiye
+              Tüm Türkiye
             </button>
             <button
               className="rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-700"
               onClick={handleRegionPageClick}
               type="button"
             >
-              Bolge Sayfasi
+              Bölge Sayfası
             </button>
           </div>
         )}
 
         <svg
-          aria-label="Turkiye sehir restoran haritasi"
+          aria-label="Türkiye şehir restoran haritası"
           className={`${selectedProvince ? 'h-full min-h-[520px]' : 'h-[480px]'} w-full transition-all duration-500`}
           role="img"
           viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
@@ -272,6 +311,16 @@ const TurkeyMap = () => {
               }
             `}
           </style>
+
+          <rect
+            aria-hidden="true"
+            fill="transparent"
+            height={VIEWBOX_HEIGHT}
+            onClick={handleResetMap}
+            width={VIEWBOX_WIDTH}
+            x="0"
+            y="0"
+          />
 
           <g
             style={{
@@ -299,11 +348,11 @@ const TurkeyMap = () => {
                   fill={fillColor}
                   filter={isSelectedProvince ? 'url(#selectedProvinceShadow)' : isActive ? 'url(#provinceShadow)' : 'none'}
                   key={feature.properties.id || provinceName}
-                  onClick={() => region && handleProvinceClick(region, provinceName)}
+                  onClick={(event) => region && handleProvinceClick(event, region, provinceName)}
                   onKeyDown={(event) => {
                     if (region && (event.key === 'Enter' || event.key === ' ')) {
                       event.preventDefault();
-                      handleProvinceClick(region, provinceName);
+                      handleProvinceClick(event, region, provinceName);
                     }
                   }}
                   onMouseEnter={() => region && setActiveRegion(region)}
@@ -322,37 +371,36 @@ const TurkeyMap = () => {
               );
             })}
 
-            {!selectedProvince &&
-              selectedFeatures.map((feature) => {
-                const provinceName = feature.properties.name;
-                const center = getFeatureCenter(feature);
+            {selectedFeatures.map((feature) => {
+              const provinceName = feature.properties.name;
+              const center = getFeatureLabelCenter(feature);
 
-                return (
-                  <g
-                    key={`city-${provinceName}`}
-                    pointerEvents="none"
-                    style={{
-                      opacity: selectedRegion ? 1 : 0,
-                      transition: 'opacity 260ms ease 180ms',
-                    }}
-                    transform={`translate(${center.x.toFixed(2)} ${center.y.toFixed(2)})`}
+              return (
+                <g
+                  key={`city-${provinceName}`}
+                  pointerEvents="none"
+                  style={{
+                    opacity: selectedRegion ? 1 : 0,
+                    transition: 'opacity 260ms ease 180ms',
+                  }}
+                  transform={`translate(${center.x.toFixed(2)} ${center.y.toFixed(2)})`}
+                >
+                  <circle fill="#111827" r="2.8" stroke="#ffffff" strokeWidth="1" />
+                  <text
+                    fill="#111827"
+                    fontSize="8"
+                    fontWeight="700"
+                    paintOrder="stroke"
+                    stroke="#ffffff"
+                    strokeWidth="2.2"
+                    textAnchor="middle"
+                    y="-6"
                   >
-                    <circle fill="#111827" r="2.8" stroke="#ffffff" strokeWidth="1" />
-                    <text
-                      fill="#111827"
-                      fontSize="8"
-                      fontWeight="700"
-                      paintOrder="stroke"
-                      stroke="#ffffff"
-                      strokeWidth="2.2"
-                      textAnchor="middle"
-                      y="-6"
-                    >
-                      {provinceName}
-                    </text>
-                  </g>
-                );
-              })}
+                    {provinceName}
+                  </text>
+                </g>
+              );
+            })}
 
           </g>
         </svg>
@@ -366,12 +414,12 @@ const TurkeyMap = () => {
             }}
           >
             <p className="font-semibold text-slate-900">{visibleRegion.name}</p>
-            <p className="mt-1 text-xs text-slate-500">{regionStats[visibleRegion.id]?.cityCount} sehir</p>
+            <p className="mt-1 text-xs text-slate-500">{regionStats[visibleRegion.id]?.cityCount} Şehir</p>
             <div className="mt-3 flex items-center justify-between rounded bg-slate-50 px-2 py-1">
-              <span className="text-xs text-slate-600">One cikan</span>
+              <span className="text-xs text-slate-600">Öne çıkan</span>
               <span className="text-xs font-medium text-slate-900">{regionStats[visibleRegion.id]?.highlight}</span>
             </div>
-            <p className="mt-2 text-xs text-amber-700">{regionStats[visibleRegion.id]?.rating} kullanici puani</p>
+            <p className="mt-2 text-xs text-amber-700">{regionStats[visibleRegion.id]?.rating} kullanıcı puanı</p>
           </div>
         )}
 
@@ -380,8 +428,8 @@ const TurkeyMap = () => {
             <p className="font-semibold text-slate-900">{selectedProvince || selectedRegion.name}</p>
             <p className="mt-1 text-xs text-slate-600">
               {selectedProvince
-                ? 'Restoranlar performans icin harita uzerinde pinlenmeden panelde listelenir.'
-                : `${selectedFeatures.length} sehir gosteriliyor. Bir sehre tiklayarak restoranlari gor.`}
+                ? 'Restoranlar performans için harita üzerinde pinlenmeden panelde listelenir.'
+                : `${selectedFeatures.length} Şehir gösteriliyor. Bir şehre tıklayarak restoranları gör.`}
             </p>
           </div>
         )}
@@ -396,15 +444,15 @@ const TurkeyMap = () => {
         >
           <div className="flex items-start justify-between gap-4 border-b p-5">
             <div>
-              <p className="text-xs font-semibold uppercase text-red-700">Sehir rehberi</p>
+              <p className="text-xs font-semibold uppercase text-red-700">Şehir rehberi</p>
               <h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedProvince}</h2>
               <p className="mt-1 text-sm text-slate-500">{selectedRegion?.name}</p>
               <Link className="mt-3 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/cities/${selectedCityId}`}>
-                Sehir sayfasina git
+                Şehir sayfasına git
               </Link>
             </div>
             <button
-              aria-label="Sehir menusunu kapat"
+              aria-label="Şehir menüsünü kapat"
               className="flex h-9 w-9 items-center justify-center rounded border text-xl leading-none text-slate-700 transition hover:bg-slate-50"
               onClick={handleCloseCityMenu}
               type="button"
@@ -415,12 +463,12 @@ const TurkeyMap = () => {
 
           <div className="h-[calc(100%-88px)] space-y-6 overflow-y-auto p-5">
             <section>
-              <h3 className="font-semibold text-slate-950">Populer Restoranlar</h3>
-              {restaurantsLoading && <p className="mt-3 text-sm text-slate-500">Restoranlar yukleniyor...</p>}
+              <h3 className="font-semibold text-slate-950">Popüler Restoranlar</h3>
+              {restaurantsLoading && <p className="mt-3 text-sm text-slate-500">Restoranlar yükleniyor...</p>}
               {restaurantsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{restaurantsError.message}</p>}
               {!restaurantsLoading && !cityRestaurants.length && (
                 <p className="mt-3 rounded border border-dashed bg-white p-3 text-sm text-slate-500">
-                  Bu sehir icin restoran kaydi bekleniyor.
+                  Bu şehir için restoran kaydı bekleniyor.
                 </p>
               )}
               <div className="mt-3 space-y-3">
@@ -444,12 +492,12 @@ const TurkeyMap = () => {
             </section>
 
             <section>
-              <h3 className="font-semibold text-slate-950">Sehirde One Cikan Lezzetler</h3>
-              {foodsLoading && <p className="mt-3 text-sm text-slate-500">Yemekler yukleniyor...</p>}
+              <h3 className="font-semibold text-slate-950">Şehirde Öne Çıkan Lezzetler</h3>
+              {foodsLoading && <p className="mt-3 text-sm text-slate-500">Yemekler yükleniyor...</p>}
               {foodsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
               {!foodsLoading && !cityFoods.length && (
                 <p className="mt-3 rounded border border-dashed bg-white p-3 text-sm text-slate-500">
-                  Bu sehir icin lezzet kaydi bekleniyor.
+                  Bu şehir için lezzet kaydı bekleniyor.
                 </p>
               )}
               <div className="mt-3 space-y-3">

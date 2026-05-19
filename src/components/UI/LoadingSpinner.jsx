@@ -5,7 +5,7 @@ const sizeClasses = {
 };
 
 const LoadingSpinner = ({
-  label = 'Yukleniyor...',
+  label = 'Yükleniyor...',
   size = 'md',
   fullScreen = false,
   showLabel = true,

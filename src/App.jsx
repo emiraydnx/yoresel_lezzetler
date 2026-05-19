@@ -107,7 +107,7 @@ const AppShell = () => {
 
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
           {loading ? (
-            <LoadingSpinner className="py-16" label="Oturum bilgileri yukleniyor..." size="lg" />
+            <LoadingSpinner className="py-16" label="Oturum bilgileri yükleniyor..." size="lg" />
           ) : (
             <AppRoutes />
           )}

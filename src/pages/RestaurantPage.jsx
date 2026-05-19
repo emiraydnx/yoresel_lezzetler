@@ -50,13 +50,13 @@ const RestaurantPage = () => {
     } = useReviewsByTarget('restaurant', restaurant?.id, refreshKey);
 
     if (loading) {
-        return <EmptyState>Restoran detayi yukleniyor...</EmptyState>;
+        return <EmptyState>Restoran detayı yükleniyor...</EmptyState>;
     }
 
     if (error) {
         return (
             <section className="rounded border border-red-200 bg-red-50 p-6">
-                <h1 className="text-2xl font-bold text-red-800">Restoran yuklenemedi</h1>
+                <h1 className="text-2xl font-bold text-red-800">Restoran yüklenemedi</h1>
                 <p className="mt-2 text-sm text-red-700">{error.message}</p>
             </section>
         );
@@ -65,9 +65,9 @@ const RestaurantPage = () => {
     if (!restaurant) {
         return (
             <section className="rounded border bg-white p-6">
-                <h1 className="text-2xl font-bold">Restoran bulunamadi</h1>
+                <h1 className="text-2xl font-bold">Restoran bulunamadı</h1>
                 <Link className="mt-4 inline-flex rounded bg-slate-900 px-4 py-2 text-sm text-white" to="/">
-                    Ana Sayfaya Don
+                    Ana Sayfaya Dön
                 </Link>
             </section>
         );
@@ -81,7 +81,7 @@ const RestaurantPage = () => {
             setSubmitError(null);
             await createReview({
                 userId: currentUser.uid,
-                userName: userProfile?.displayName || currentUser.email || 'Kullanici',
+                userName: userProfile?.displayName || currentUser.email || 'Kullanıcı',
                 userPhotoURL: userProfile?.photoURL || '',
                 targetType: 'restaurant',
                 targetId: restaurant.id,
@@ -113,9 +113,9 @@ const RestaurantPage = () => {
                     </div>
                 )}
                 <div className="p-6">
-                    <p className="text-sm font-medium text-emerald-700">{city?.name || restaurant.cityId || 'Sehir bilgisi bekleniyor'}</p>
+                    <p className="text-sm font-medium text-emerald-700">{city?.name || restaurant.cityId || 'Şehir bilgisi bekleniyor'}</p>
                     <h1 className="mt-2 text-3xl font-bold text-slate-950">{restaurant.name}</h1>
-                    <p className="mt-3 max-w-3xl leading-7 text-slate-700">{restaurant.description || restaurant.address || 'Restoran aciklamasi bekleniyor.'}</p>
+                    <p className="mt-3 max-w-3xl leading-7 text-slate-700">{restaurant.description || restaurant.address || 'Restoran açıklaması bekleniyor.'}</p>
                     <div className="mt-5 flex flex-wrap items-center gap-4">
                         <StartRating rating={restaurant.averageRating} reviewCount={restaurant.reviewCount} />
                         {city && (
@@ -136,17 +136,17 @@ const RestaurantPage = () => {
                             Enlem: {coordinate.latitude.toFixed(4)} / Boylam: {coordinate.longitude.toFixed(4)}
                         </p>
                     ) : (
-                        <p className="mt-3 rounded bg-slate-50 p-3 text-sm text-slate-500">Harita icin geoPoint/location alani bekleniyor.</p>
+                        <p className="mt-3 rounded bg-slate-50 p-3 text-sm text-slate-500">Harita için geoPoint/location alanı bekleniyor.</p>
                     )}
                 </div>
 
                 <div className="rounded border bg-white p-5">
-                    <h2 className="font-semibold text-slate-950">Bu Restoranin Sundugu Lezzetler</h2>
-                    {foodsLoading && <p className="mt-3 text-sm text-slate-500">Lezzetler yukleniyor...</p>}
+                    <h2 className="font-semibold text-slate-950">Bu Restoranın Sunduğu Lezzetler</h2>
+                    {foodsLoading && <p className="mt-3 text-sm text-slate-500">Lezzetler yükleniyor...</p>}
                     {foodsError && <p className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">{foodsError.message}</p>}
                     {!foodsLoading && !foods.length && (
                         <p className="mt-3 text-sm text-slate-500">
-                            Bu restoran icin restaurantFoods iliskisi bekleniyor.
+                            Bu restoran için restaurantFoods ilişkisi bekleniyor.
                         </p>
                     )}
                     <div className="mt-3 space-y-3">
@@ -164,15 +164,15 @@ const RestaurantPage = () => {
             {submitError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{submitError.message}</p>}
 
             <section className="space-y-3">
-                <h2 className="text-lg font-semibold text-slate-950">Restoran Yorumlari</h2>
-                {reviewsLoading && <EmptyState>Yorumlar yukleniyor...</EmptyState>}
+                <h2 className="text-lg font-semibold text-slate-950">Restoran Yorumları</h2>
+                {reviewsLoading && <EmptyState>Yorumlar yükleniyor...</EmptyState>}
                 {reviewsError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{reviewsError.message}</p>}
-                {!reviewsLoading && !reviews.length && <EmptyState>Bu restoran icin onayli yorum bulunmuyor.</EmptyState>}
+                {!reviewsLoading && !reviews.length && <EmptyState>Bu restoran için onaylı yorum bulunmuyor.</EmptyState>}
                 {reviews.map((review) => (
                     <article className="rounded border bg-white p-5" key={review.id}>
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <Link className="font-semibold text-slate-950 hover:text-red-800" to={`/users/${review.userId}`}>
-                                {review.userName || 'Kullanici'}
+                                {review.userName || 'Kullanıcı'}
                             </Link>
                             <span className="rounded bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700">
                                 {Number(review.rating || 0) ? `${Number(review.rating).toFixed(1)}/5` : 'Yeni'}
@@ -180,7 +180,7 @@ const RestaurantPage = () => {
                         </div>
                         <p className="mt-3 leading-7 text-slate-700">{review.comment || 'Yorum metni bekleniyor.'}</p>
                         <Link className="mt-4 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/reviews/${review.id}`}>
-                            Yorumu ac
+                            Yorumu aç
                         </Link>
                     </article>
                 ))}

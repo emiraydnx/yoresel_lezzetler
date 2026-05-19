@@ -23,7 +23,7 @@ const Avatar = ({ name = 'K', photoURL }) => {
 };
 
 const GourmetReviewCard = ({ review }) => {
-  const userName = review.userName || 'Kullanici';
+  const userName = review.userName || 'Kullanıcı';
   const userProfilePath = `/users/${review.userId || review.id}`;
   const rating = Number(review.rating || 0);
   const foodName = review.foodName || 'Yemek bilgisi bekleniyor';
@@ -35,7 +35,7 @@ const GourmetReviewCard = ({ review }) => {
   return (
     <article className="rounded border bg-white p-4 transition hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-sm">
       <div className="flex items-start gap-3">
-        <Link aria-label={`${userName} profilini goruntule`} to={userProfilePath}>
+        <Link aria-label={`${userName} profilini görüntüle`} to={userProfilePath}>
           <Avatar name={userName} photoURL={review.userPhotoURL} />
         </Link>
         <div className="min-w-0 flex-1">
@@ -47,7 +47,7 @@ const GourmetReviewCard = ({ review }) => {
               <span className="rounded bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700">Onayli</span>
             )}
           </div>
-          <p className="text-xs text-slate-500">{review.userTitle || 'Yoresel lezzet yorumcusu'}</p>
+          <p className="text-xs text-slate-500">{review.userTitle || 'Yöresel lezzet yorumcusu'}</p>
           <p className="mt-1 text-xs font-medium text-slate-600">{formatFollowerCount(review.followerCount)} takipci</p>
         </div>
         <span className="rounded bg-amber-50 px-2 py-1 text-sm font-semibold text-amber-700">
@@ -73,7 +73,7 @@ const GourmetReviewCard = ({ review }) => {
         )}
         <Link className="mt-2 block" to={`/reviews/${review.id}`}>
           <p className="line-clamp-4 text-sm leading-6 text-slate-600">{review.comment || 'Yorum metni bekleniyor.'}</p>
-          <p className="mt-4 text-sm font-medium text-red-700">{Number(review.replyCount || 0)} yanit</p>
+          <p className="mt-4 text-sm font-medium text-red-700">{Number(review.replyCount || 0)} yanıt</p>
         </Link>
       </div>
     </article>

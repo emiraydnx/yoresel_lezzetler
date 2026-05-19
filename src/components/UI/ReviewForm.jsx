@@ -4,10 +4,10 @@ import StartRating from './StartRating';
 
 const getSubmitErrorMessage = (error) => {
     if (error?.code === 'permission-denied') {
-        return 'Yorum gonderilemedi. E-posta dogruladiysan cikis yapip tekrar giris yap veya sayfayi yenile.';
+        return 'Yorum gönderilemedi. E-posta doğruladıysan çıkış yapıp tekrar giriş yap veya sayfayı yenile.';
     }
 
-    return error?.message || 'Yorum gonderilemedi.';
+    return error?.message || 'Yorum gönderilemedi.';
 };
 
 const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
@@ -35,7 +35,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
         }
 
         try {
-            setSubmitState({ status: 'loading', message: 'Yorum gonderiliyor...' });
+            setSubmitState({ status: 'loading', message: 'Yorum gönderiliyor...' });
 
             if (currentUser.emailVerified === false) {
                 await currentUser.reload?.();
@@ -43,7 +43,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
                 if (currentUser.emailVerified === false) {
                     setSubmitState({
                         status: 'error',
-                        message: 'Yorum gonderebilmek icin once e-posta adresini dogrulaman gerekiyor.',
+                        message: 'Yorum gönderebilmek için önce e-posta adresini doğrulaman gerekiyor.',
                     });
                     return;
                 }
@@ -53,7 +53,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
             await onSubmit({ rating, comment: comment.trim() });
             setComment('');
             setRating(5);
-            setSubmitState({ status: 'success', message: 'Yorumun gonderildi. Admin onayindan sonra yayinda gorunecek.' });
+            setSubmitState({ status: 'success', message: 'Yorumun gönderildi. Admin onayından sonra yayında görünecek.' });
         } catch (err) {
             setSubmitState({ status: 'error', message: getSubmitErrorMessage(err) });
         }
@@ -62,9 +62,9 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
     if (!currentUser) {
         return (
             <div className="rounded border border-dashed bg-white p-5 text-sm text-slate-600">
-                Yorum yazmak icin{' '}
+                Yorum yazmak için{' '}
                 <Link className="font-medium text-red-700 hover:text-red-900" to="/login">
-                    giris yap
+                    giriş yap
                 </Link>
                 .
             </div>
@@ -76,7 +76,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="font-semibold text-slate-950">Yorum Yaz</h2>
-                    <p className="mt-1 text-sm text-slate-500">Yorum onaydan sonra herkese acik gorunur.</p>
+                    <p className="mt-1 text-sm text-slate-500">Yorum onaydan sonra herkese açık görünür.</p>
                 </div>
                 <div className="text-sm font-medium text-slate-700">
                     Puan
@@ -101,7 +101,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
                     setComment(event.target.value);
                     resetMessage();
                 }}
-                placeholder="Deneyimini kisaca yaz..."
+                placeholder="Deneyimini kısaca yaz..."
                 value={comment}
             />
             {submitState.message && (
@@ -117,7 +117,7 @@ const ReviewForm = ({ currentUser, disabled = false, onSubmit }) => {
                 </p>
             )}
             <button className="mt-3 rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={isSubmitting} type="submit">
-                {isSubmitting ? 'Gonderiliyor...' : 'Yorumu Gonder'}
+                {isSubmitting ? 'Gönderiliyor...' : 'Yorumu Gönder'}
             </button>
         </form>
     );

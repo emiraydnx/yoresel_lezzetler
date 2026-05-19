@@ -57,7 +57,7 @@ const AdminUsers = () => {
     };
 
     const handleDelete = async (user) => {
-        if (window.confirm(`${user.email || user.displayName || user.id} profil dokumani silinsin mi? Auth hesabi silinmez.`)) {
+        if (window.confirm(`${user.email || user.displayName || user.id} profil dokümanı silinsin mi? Auth hesabı silinmez.`)) {
             await deleteItem(user.id);
         }
     };
@@ -67,13 +67,13 @@ const AdminUsers = () => {
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                     <p className="text-sm font-medium text-emerald-700">Admin / Users</p>
-                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Kullanici Profil Yonetimi</h1>
+                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Kullanıcı Profil Yönetimi</h1>
                     <p className="mt-2 text-sm text-slate-600">
-                        users collection dokumanlari duzenlenir. Auth hesabi olusturma/silme Cloud Functions ile yapilmalidir.
+                        users collection dokümanları düzenlenir. Auth hesabı oluşturma/silme Cloud Functions ile yapılmalıdır.
                     </p>
                 </div>
                 <Link className="text-sm font-medium text-red-700 hover:text-red-900" to="/admin">
-                    Admin panele don
+                    Admin panele dön
                 </Link>
             </div>
 
@@ -111,7 +111,7 @@ const AdminUsers = () => {
                 </label>
                 <div className="flex gap-3 md:col-span-2">
                     <button className="rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={!editingId || submitting} type="submit">
-                        Guncelle
+                        Güncelle
                     </button>
                     {editingId && (
                         <button className="rounded border px-4 py-2 text-sm" onClick={() => { setEditingId(null); setForm(emptyForm); }} type="button">
@@ -122,11 +122,11 @@ const AdminUsers = () => {
             </form>
 
             {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
-            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Kullanicilar yukleniyor...</p>}
+            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Kullanıcılar yükleniyor...</p>}
 
             <div className="overflow-hidden rounded border bg-white">
                 <div className="grid grid-cols-[1.4fr_1fr_1fr_auto] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500">
-                    <span>Kullanici</span>
+                    <span>Kullanıcı</span>
                     <span>Rol</span>
                     <span>Takipci</span>
                     <span>Islem</span>
@@ -134,13 +134,13 @@ const AdminUsers = () => {
                 {users.map((user) => (
                     <div className="grid grid-cols-[1.4fr_1fr_1fr_auto] gap-3 border-b px-4 py-3 text-sm last:border-b-0" key={user.id}>
                         <div>
-                            <p className="font-medium text-slate-950">{user.displayName || user.name || 'Kullanici'}</p>
+                            <p className="font-medium text-slate-950">{user.displayName || user.name || 'Kullanıcı'}</p>
                             <p className="text-xs text-slate-500">{user.email || user.id}</p>
                         </div>
                         <span className="text-slate-600">{user.role || 'user'}</span>
                         <span className="text-slate-600">{Number(user.followerCount || 0)}</span>
                         <div className="flex gap-2">
-                            <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(user)} type="button">Duzenle</button>
+                            <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(user)} type="button">Düzenle</button>
                             <button className="rounded border border-red-200 px-3 py-1 text-xs text-red-700" onClick={() => handleDelete(user)} type="button">Sil</button>
                         </div>
                     </div>

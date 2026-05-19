@@ -56,7 +56,7 @@ const PublicUserProfilePage = () => {
   if (profileLoading) {
     return (
       <section className="rounded border bg-white p-6">
-        <p className="text-sm text-slate-500">Kullanici profili yukleniyor...</p>
+        <p className="text-sm text-slate-500">Kullanıcı profili yükleniyor...</p>
       </section>
     );
   }
@@ -64,7 +64,7 @@ const PublicUserProfilePage = () => {
   if (profileError) {
     return (
       <section className="rounded border border-red-200 bg-red-50 p-6">
-        <h1 className="text-2xl font-bold text-red-800">Kullanici yuklenemedi</h1>
+        <h1 className="text-2xl font-bold text-red-800">Kullanıcı yüklenemedi</h1>
         <p className="mt-2 text-sm text-red-700">{profileError.message}</p>
       </section>
     );
@@ -73,16 +73,16 @@ const PublicUserProfilePage = () => {
   if (!profile) {
     return (
       <section className="rounded border bg-white p-6">
-        <h1 className="text-2xl font-bold">Kullanici bulunamadi</h1>
+        <h1 className="text-2xl font-bold">Kullanıcı bulunamadı</h1>
         <Link className="mt-4 inline-flex rounded bg-slate-900 px-4 py-2 text-sm text-white" to="/">
-          Ana Sayfaya Don
+          Ana Sayfaya Dön
         </Link>
       </section>
     );
   }
 
-  const displayName = profile.displayName || profile.name || 'Kullanici';
-  const title = profile.title || 'Yoresel lezzet yorumcusu';
+  const displayName = profile.displayName || profile.name || 'Kullanıcı';
+  const title = profile.title || 'Yöresel lezzet yorumcusu';
   const followerCount = Number(profile.followerCount || 0);
 
   return (
@@ -119,7 +119,7 @@ const PublicUserProfilePage = () => {
             </button>
           ) : (
             <Link className="rounded bg-slate-900 px-4 py-2 text-sm font-medium text-white" to="/login">
-              Takip icin giris yap
+              Takip için giriş yap
             </Link>
           )}
         </div>
@@ -127,12 +127,12 @@ const PublicUserProfilePage = () => {
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-slate-950">Kullanici Yorumlari</h2>
-        {reviewsLoading && <p className="text-sm text-slate-500">Yorumlar yukleniyor...</p>}
+        <h2 className="text-lg font-semibold text-slate-950">Kullanıcı Yorumları</h2>
+        {reviewsLoading && <p className="text-sm text-slate-500">Yorumlar yükleniyor...</p>}
         {reviewsError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{reviewsError.message}</p>}
         {!reviewsLoading && !reviews.length && (
           <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">
-            Bu kullanicinin henuz herkese acik yorumu yok.
+            Bu kullanıcının henüz herkese açık yorumu yok.
           </p>
         )}
         {reviews.map((review) => {
@@ -154,7 +154,7 @@ const PublicUserProfilePage = () => {
               </p>
               <p className="mt-3 leading-7 text-slate-700">{review.comment || 'Yorum metni bekleniyor.'}</p>
               <Link className="mt-4 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/reviews/${review.id}`}>
-                Yorumu ve yanitlari gor
+                Yorumu ve yanıtları gör
               </Link>
             </article>
           );

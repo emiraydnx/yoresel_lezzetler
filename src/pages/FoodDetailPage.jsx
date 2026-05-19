@@ -14,15 +14,15 @@ const EmptyState = ({ children }) => (
 
 const ReviewList = ({ error, loading, reviews }) => (
     <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-slate-950">Kullanici Yorumlari</h2>
-        {loading && <EmptyState>Yorumlar yukleniyor...</EmptyState>}
+        <h2 className="text-lg font-semibold text-slate-950">Kullanıcı Yorumları</h2>
+        {loading && <EmptyState>Yorumlar yükleniyor...</EmptyState>}
         {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
-        {!loading && !reviews.length && <EmptyState>Bu lezzet icin onayli yorum bulunmuyor.</EmptyState>}
+        {!loading && !reviews.length && <EmptyState>Bu lezzet için onaylı yorum bulunmuyor.</EmptyState>}
         {reviews.map((review) => (
             <article className="rounded border bg-white p-5" key={review.id}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <Link className="font-semibold text-slate-950 hover:text-red-800" to={`/users/${review.userId}`}>
-                        {review.userName || 'Kullanici'}
+                        {review.userName || 'Kullanıcı'}
                     </Link>
                     <span className="rounded bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700">
                         {Number(review.rating || 0) ? `${Number(review.rating).toFixed(1)}/5` : 'Yeni'}
@@ -30,7 +30,7 @@ const ReviewList = ({ error, loading, reviews }) => (
                 </div>
                 <p className="mt-3 leading-7 text-slate-700">{review.comment || 'Yorum metni bekleniyor.'}</p>
                 <Link className="mt-4 inline-flex text-sm font-medium text-red-700 hover:text-red-900" to={`/reviews/${review.id}`}>
-                    Yorumu ac
+                    Yorumu aç
                 </Link>
             </article>
         ))}
@@ -53,13 +53,13 @@ const FoodDetailPage = () => {
     } = useReviewsByTarget('food', food?.id, refreshKey);
 
     if (loading) {
-        return <EmptyState>Lezzet detayi yukleniyor...</EmptyState>;
+        return <EmptyState>Lezzet detayı yükleniyor...</EmptyState>;
     }
 
     if (error) {
         return (
             <section className="rounded border border-red-200 bg-red-50 p-6">
-                <h1 className="text-2xl font-bold text-red-800">Lezzet yuklenemedi</h1>
+                <h1 className="text-2xl font-bold text-red-800">Lezzet yüklenemedi</h1>
                 <p className="mt-2 text-sm text-red-700">{error.message}</p>
             </section>
         );
@@ -68,9 +68,9 @@ const FoodDetailPage = () => {
     if (!food) {
         return (
             <section className="rounded border bg-white p-6">
-                <h1 className="text-2xl font-bold">Lezzet bulunamadi</h1>
+                <h1 className="text-2xl font-bold">Lezzet bulunamadı</h1>
                 <Link className="mt-4 inline-flex rounded bg-slate-900 px-4 py-2 text-sm text-white" to="/">
-                    Ana Sayfaya Don
+                    Ana Sayfaya Dön
                 </Link>
             </section>
         );
@@ -82,7 +82,7 @@ const FoodDetailPage = () => {
             setSubmitError(null);
             await createReview({
                 userId: currentUser.uid,
-                userName: userProfile?.displayName || currentUser.email || 'Kullanici',
+                userName: userProfile?.displayName || currentUser.email || 'Kullanıcı',
                 userPhotoURL: userProfile?.photoURL || '',
                 targetType: 'food',
                 targetId: food.id,
@@ -110,13 +110,13 @@ const FoodDetailPage = () => {
                     <img alt={food.name} className="h-72 w-full object-cover" src={food.imageUrl} />
                 ) : (
                     <div className="flex h-56 w-full items-center justify-center bg-stone-200 text-lg font-semibold text-stone-600">
-                        {food.name || 'Yoresel lezzet'}
+                        {food.name || 'Yöresel lezzet'}
                     </div>
                 )}
                 <div className="p-6">
-                    <p className="text-sm font-medium text-emerald-700">{city?.name || food.cityId || 'Sehir bilgisi bekleniyor'}</p>
+                    <p className="text-sm font-medium text-emerald-700">{city?.name || food.cityId || 'Şehir bilgisi bekleniyor'}</p>
                     <h1 className="mt-2 text-3xl font-bold text-slate-950">{food.name}</h1>
-                    <p className="mt-4 max-w-3xl leading-7 text-slate-700">{food.description || 'Bu lezzet icin aciklama bekleniyor.'}</p>
+                    <p className="mt-4 max-w-3xl leading-7 text-slate-700">{food.description || 'Bu lezzet için açıklama bekleniyor.'}</p>
                     <div className="mt-5 flex flex-wrap items-center gap-4">
                         <StartRating rating={food.averageRating} reviewCount={food.reviewCount} />
                         {city && (
@@ -130,7 +130,7 @@ const FoodDetailPage = () => {
 
             <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-slate-950">Bu Lezzeti Deneyebilecegin Restoranlar</h2>
-                {!restaurants.length && <EmptyState>Bu sehir icin restoran kaydi bekleniyor.</EmptyState>}
+                {!restaurants.length && <EmptyState>Bu şehir için restoran kaydı bekleniyor.</EmptyState>}
                 <div className="grid gap-4 md:grid-cols-2">
                     {restaurants.map((restaurant) => (
                         <Link className="rounded border bg-white p-4 hover:border-slate-400" key={restaurant.id} to={`/restaurants/${restaurant.slug || restaurant.id}`}>

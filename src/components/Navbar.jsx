@@ -69,12 +69,13 @@ const Navbar = () => {
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3" aria-label="Ana navigasyon">
         <Link className="flex items-center gap-3 font-semibold text-slate-950" onClick={closeMenu} to="/">
-          <span className="flex h-10 w-10 items-center justify-center rounded bg-red-700 text-lg font-bold text-white">
-            YL
-          </span>
+          <img
+            alt="Yöresel Lezzetler"
+            className="h-10 w-10 object-contain"
+            src="/logo2.png"
+          />
           <span className="leading-tight">
-            <span className="block">Yoresel</span>
-            <span className="block text-sm font-medium text-slate-500">Lezzetler</span>
+            <span className="block">CULINARA</span>
           </span>
         </Link>
 
@@ -103,16 +104,16 @@ const Navbar = () => {
                 onClick={handleLogout}
                 type="button"
               >
-                {isLoggingOut ? 'Cikiliyor...' : 'Cikis'}
+                {isLoggingOut ? 'Çıkılıyor...' : 'Çıkış'}
               </button>
             </>
           ) : (
             <>
               <Link className="rounded px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100" to="/login">
-                Giris
+                Giriş
               </Link>
               <Link className="rounded bg-slate-950 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800" to="/register">
-                Kayit
+                Kayıt
               </Link>
             </>
           )}
@@ -120,7 +121,7 @@ const Navbar = () => {
 
         <button
           aria-expanded={isMenuOpen}
-          aria-label="Menuyu ac veya kapat"
+          aria-label="Menüyü aç veya kapat"
           className="inline-flex h-10 w-10 items-center justify-center rounded border border-slate-200 text-slate-700 md:hidden"
           onClick={() => setIsMenuOpen((current) => !current)}
           type="button"
@@ -160,7 +161,7 @@ const Navbar = () => {
                     onClick={handleLogout}
                     type="button"
                   >
-                    {isLoggingOut ? 'Cikiliyor...' : 'Cikis Yap'}
+                    {isLoggingOut ? 'Çıkılıyor...' : 'Çıkış Yap'}
                   </button>
                 </div>
               ) : (
@@ -170,14 +171,14 @@ const Navbar = () => {
                     onClick={closeMenu}
                     to="/login"
                   >
-                    Giris
+                    Giriş
                   </Link>
                   <Link
                     className="rounded bg-slate-950 px-3 py-2 text-center text-sm font-medium text-white"
                     onClick={closeMenu}
                     to="/register"
                   >
-                    Kayit
+                    Kayıt
                   </Link>
                 </div>
               )}

@@ -77,7 +77,7 @@ const AdminFoods = () => {
     };
 
     const handleDelete = async (food) => {
-        if (window.confirm(`${food.name || food.id} kaydi silinsin mi?`)) {
+        if (window.confirm(`${food.name || food.id} kaydı silinsin mi?`)) {
             await deleteItem(food.id);
         }
     };
@@ -87,11 +87,11 @@ const AdminFoods = () => {
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                     <p className="text-sm font-medium text-emerald-700">Admin / Foods</p>
-                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Lezzet Yonetimi</h1>
-                    <p className="mt-2 text-sm text-slate-600">foods collection icin listeleme, ekleme, duzenleme ve silme.</p>
+                    <h1 className="mt-2 text-2xl font-bold text-slate-950">Lezzet Yönetimi</h1>
+                    <p className="mt-2 text-sm text-slate-600">foods collection için listeleme, ekleme, düzenleme ve silme.</p>
                 </div>
                 <Link className="text-sm font-medium text-red-700 hover:text-red-900" to="/admin">
-                    Admin panele don
+                    Admin panele dön
                 </Link>
             </div>
 
@@ -113,7 +113,7 @@ const AdminFoods = () => {
                     <input className="mt-1 w-full rounded border px-3 py-2" name="regionId" onChange={handleChange} required value={form.regionId} />
                 </label>
                 <label className="text-sm font-medium text-slate-700 md:col-span-2">
-                    Aciklama
+                    Açıklama
                     <textarea className="mt-1 min-h-24 w-full rounded border px-3 py-2" name="description" onChange={handleChange} value={form.description} />
                 </label>
                 <label className="text-sm font-medium text-slate-700 md:col-span-2">
@@ -130,11 +130,11 @@ const AdminFoods = () => {
                 </label>
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
                     <input checked={form.isFeatured} name="isFeatured" onChange={handleChange} type="checkbox" />
-                    One cikan lezzet
+                    Öne çıkan lezzet
                 </label>
                 <div className="flex gap-3 md:col-span-2">
                     <button className="rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={submitting} type="submit">
-                        {editingId ? 'Guncelle' : 'Ekle'}
+                        {editingId ? 'Güncelle' : 'Ekle'}
                     </button>
                     {editingId && (
                         <button className="rounded border px-4 py-2 text-sm" onClick={() => { setEditingId(null); setForm(emptyForm); }} type="button">
@@ -145,12 +145,12 @@ const AdminFoods = () => {
             </form>
 
             {error && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
-            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Lezzetler yukleniyor...</p>}
+            {loading && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Lezzetler yükleniyor...</p>}
 
             <div className="overflow-hidden rounded border bg-white">
                 <div className="grid grid-cols-[1.4fr_1fr_1fr_auto] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500">
                     <span>Lezzet</span>
-                    <span>Sehir</span>
+                    <span>Şehir</span>
                     <span>Puan</span>
                     <span>Islem</span>
                 </div>
@@ -163,7 +163,7 @@ const AdminFoods = () => {
                         <span className="text-slate-600">{food.cityId || '-'}</span>
                         <span className="text-slate-600">{Number(food.averageRating || 0).toFixed(1)} / {Number(food.reviewCount || 0)} yorum</span>
                         <div className="flex gap-2">
-                            <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(food)} type="button">Duzenle</button>
+                            <button className="rounded border px-3 py-1 text-xs" onClick={() => handleEdit(food)} type="button">Düzenle</button>
                             <button className="rounded border border-red-200 px-3 py-1 text-xs text-red-700" onClick={() => handleDelete(food)} type="button">Sil</button>
                         </div>
                     </div>

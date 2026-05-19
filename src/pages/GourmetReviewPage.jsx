@@ -34,7 +34,7 @@ const GourmetReviewPage = () => {
   if (loading) {
     return (
       <section className="rounded border bg-white p-6">
-        <p className="text-sm text-slate-500">Yorum yukleniyor...</p>
+        <p className="text-sm text-slate-500">Yorum yükleniyor...</p>
       </section>
     );
   }
@@ -42,7 +42,7 @@ const GourmetReviewPage = () => {
   if (error) {
     return (
       <section className="rounded border border-red-200 bg-red-50 p-6">
-        <h1 className="text-2xl font-bold text-red-800">Yorum yuklenemedi</h1>
+        <h1 className="text-2xl font-bold text-red-800">Yorum yüklenemedi</h1>
         <p className="mt-2 text-sm text-red-700">{error.message}</p>
       </section>
     );
@@ -51,17 +51,17 @@ const GourmetReviewPage = () => {
   if (!review) {
     return (
       <section className="rounded border bg-white p-6">
-        <h1 className="text-2xl font-bold">Yorum bulunamadi</h1>
+        <h1 className="text-2xl font-bold">Yorum bulunamadı</h1>
         <Link className="mt-4 inline-flex rounded bg-slate-900 px-4 py-2 text-sm text-white" to="/">
-          Ana Sayfaya Don
+          Ana Sayfaya Dön
         </Link>
       </section>
     );
   }
 
-  const authorName = author?.displayName || review.userName || 'Kullanici';
+  const authorName = author?.displayName || review.userName || 'Kullanıcı';
   const authorPhotoURL = author?.photoURL || review.userPhotoURL || '';
-  const authorTitle = author?.title || review.userTitle || 'Yoresel lezzet yorumcusu';
+  const authorTitle = author?.title || review.userTitle || 'Yöresel lezzet yorumcusu';
   const followerCount = author?.followerCount || review.followerCount || 0;
   const rating = Number(review.rating || 0);
   const foodPath = `/foods/${review.foodId || review.foodSlug || ''}`;
@@ -81,7 +81,7 @@ const GourmetReviewPage = () => {
       await createReviewReply({
         reviewId,
         userId: currentUser.uid,
-        userName: userProfile?.displayName || currentUser.email || 'Kullanici',
+        userName: userProfile?.displayName || currentUser.email || 'Kullanıcı',
         userPhotoURL: userProfile?.photoURL || '',
         comment: replyText.trim(),
       });
@@ -97,7 +97,7 @@ const GourmetReviewPage = () => {
   return (
     <section className="space-y-6">
       <Link className="text-sm font-medium text-red-700 hover:text-red-900" to="/">
-        Ana sayfaya don
+        Ana sayfaya dön
       </Link>
 
       <article className="rounded border bg-white p-6">
@@ -142,31 +142,31 @@ const GourmetReviewPage = () => {
             <textarea
               className="mt-3 min-h-28 w-full rounded border px-3 py-2 text-sm"
               onChange={(event) => setReplyText(event.target.value)}
-              placeholder="Bu yoruma yanitini yaz..."
+              placeholder="Bu yoruma yanıtını yaz..."
               value={replyText}
             />
             {submitError && <p className="mt-2 text-sm text-red-700">{submitError.message}</p>}
             <button className="mt-3 rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60" disabled={submitting} type="submit">
-              {submitting ? 'Gonderiliyor...' : 'Yaniti Gonder'}
+              {submitting ? 'Gönderiliyor...' : 'Yanıtı Gönder'}
             </button>
           </>
         ) : (
           <p className="mt-3 text-sm text-slate-600">
-            Yanit yazmak icin <Link className="font-medium text-red-700" to="/login">giris yap</Link>.
+            Yanıt yazmak için <Link className="font-medium text-red-700" to="/login">giriş yap</Link>.
           </p>
         )}
       </form>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-slate-950">Kullanici Yanitlari</h2>
-        {repliesLoading && <p className="text-sm text-slate-500">Yanitlar yukleniyor...</p>}
+        <h2 className="text-lg font-semibold text-slate-950">Kullanıcı Yanıtları</h2>
+        {repliesLoading && <p className="text-sm text-slate-500">Yanıtlar yükleniyor...</p>}
         {repliesError && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{repliesError.message}</p>}
-        {!repliesLoading && !replies.length && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Bu yoruma henuz yanit yazilmadi.</p>}
+        {!repliesLoading && !replies.length && <p className="rounded border border-dashed bg-white p-4 text-sm text-slate-500">Bu yoruma henüz yanıt yazılmadı.</p>}
         {replies.map((reply) => (
           <article className="flex gap-3 rounded border bg-white p-4" key={reply.id}>
-            <Avatar name={reply.userName || 'Kullanici'} photoURL={reply.userPhotoURL} />
+            <Avatar name={reply.userName || 'Kullanıcı'} photoURL={reply.userPhotoURL} />
             <div>
-              <p className="font-medium text-slate-900">{reply.userName || 'Kullanici'}</p>
+              <p className="font-medium text-slate-900">{reply.userName || 'Kullanıcı'}</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">{reply.comment}</p>
             </div>
           </article>

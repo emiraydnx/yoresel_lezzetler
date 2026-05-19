@@ -69,12 +69,12 @@ const HomePage = () => {
 
       <section className="space-y-4">
         <SectionHeader
-          description="Her cografi bolgede en yuksek skora sahip restoranlar. Skor puan ve yorum sayisina gore hesaplanir."
-          linkText="Tum Restoranlar"
+          description="Her coğrafi bölgede en yüksek skora sahip restoranlar. Skor puan ve yorum sayısına göre hesaplanır."
+          linkText="Tüm Restoranlar"
           linkTo="/top-restaurants"
-          title="7 Bolgeden En Iyi Restoranlar"
+          title="7 Bölgeden En İyi Restoranlar"
         />
-        {topRestaurantRegionsLoading && <p className="text-sm text-slate-500">Bolge restoranlari yukleniyor...</p>}
+        {topRestaurantRegionsLoading && <p className="text-sm text-slate-500">Bölge restoranları yükleniyor...</p>}
         {topRestaurantRegionsError && (
           <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{topRestaurantRegionsError.message}</p>
         )}
@@ -99,7 +99,7 @@ const HomePage = () => {
                   <span className="h-4 w-4 rounded-full" style={{ backgroundColor: regionColors[region.id] || '#94a3b8' }} />
                 </div>
                 <p className="mt-3 line-clamp-2 text-sm text-slate-500">
-                  {restaurant?.address || 'Bu bolge icin restoran kaydi eklendiginde burada gosterilecek.'}
+                  {restaurant?.address || 'Bu bölge için restoran kaydı eklendiğinde burada gösterilecek.'}
                 </p>
                 {restaurant && (
                   <div className="mt-4">
